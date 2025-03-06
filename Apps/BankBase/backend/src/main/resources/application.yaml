@@ -1,7 +1,16 @@
 spring:
   application:
     name: Backend
-
+  datasource:
+    url: jdbc:postgresql://localhost:5433/CoffeeBank
+    username: postgres
+    password: postgres
+  jpa:
+    properties.hibernate:
+      show_sql: true
+      format_sql: true
+    hibernate:
+      ddl-auto: create-drop
 springdoc:
   swagger-ui:
     path: /swagger-ui/index.html
