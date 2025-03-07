@@ -15,7 +15,7 @@ public class InsuranceCertificate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "number", nullable = false, unique = true)
     private String number;

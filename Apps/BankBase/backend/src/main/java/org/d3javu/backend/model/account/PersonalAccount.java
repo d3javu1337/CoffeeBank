@@ -19,18 +19,18 @@ public class PersonalAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "account_name", nullable = false, length = 50)
     private String accountName;
 
     @Column(name = "deposit", nullable = false, scale = 2)
-    private double accountDeposit;
+    private Double accountDeposit;
 
     @OneToMany(mappedBy = "linkedPersonalAccount", cascade = CascadeType.ALL)
     private List<Card> linkedCards = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "linked_client_id")
     private Client linkedClient;
 
@@ -42,11 +42,11 @@ public class PersonalAccount {
         this.accountDeposit = 0d;
     }
 
-    public PersonalAccount(String name, Client client) {
-        this.accountName = name;
-        this.accountDeposit = 0d;
-        this.linkedClient = client;
-    }
+//    public PersonalAccount(String name, Client client) {
+//        this.accountName = name;
+//        this.accountDeposit = 0d;
+//        this.linkedClient = client;
+//    }
 
     public PersonalAccount(Client client) {
         this.accountName = "Персональный счёт";

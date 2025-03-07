@@ -2,6 +2,7 @@ package org.d3javu.backend.model.client.clientDocuments.identification;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.d3javu.backend.model.client.clientDocuments.assets.EGender;
 
@@ -12,11 +13,12 @@ import java.sql.Date;
 @Table(name = "international_passport")
 @Getter
 @Setter
+@NoArgsConstructor
 public class InternationalPassport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "number", nullable = false, length = 10, unique = true)
     private String number;
@@ -48,8 +50,6 @@ public class InternationalPassport {
 
     @Column(name = "date_of_expiration", nullable = false)
     private Date dateOfExpiration;
-
-    public InternationalPassport() {}
 
     public InternationalPassport(String number, String surname, String name,
                                  String patronymic, Date dateOfBirth, String placeOfBirth,

@@ -1,6 +1,7 @@
 package org.d3javu.backend.model.client.clientDocuments;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class Documents {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "passport_id", nullable = false)
@@ -38,4 +39,8 @@ public class Documents {
 
     @Column(name = "itn")
     private String itn;
+
+    public Documents(Passport passport) {
+        this.passport = passport;
+    }
 }

@@ -16,7 +16,7 @@ public class Passport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "number", nullable = false, length = 10, unique = true)
     private String number;

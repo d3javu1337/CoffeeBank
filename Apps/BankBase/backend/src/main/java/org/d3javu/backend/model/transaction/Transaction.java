@@ -2,6 +2,7 @@ package org.d3javu.backend.model.transaction;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.d3javu.backend.model.account.PersonalAccount;
 import org.d3javu.backend.model.cheque.Cheque;
@@ -13,11 +14,12 @@ import java.time.ZoneId;
 @Table(name = "transaction")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "account1_id")
@@ -46,7 +48,6 @@ public class Transaction {
     @Column(name = "creation_date", nullable = false)
     private LocalDateTime creationDate;
 
-    public Transaction() {}
 
 //    public Transaction(PersonalAccount account1, @Nullable PersonalAccount account2, @Nullable POS_Terminal posTerminal, @Nullable ATM atm, ETransaction type, double money) {
 //        this.account1 = account1;

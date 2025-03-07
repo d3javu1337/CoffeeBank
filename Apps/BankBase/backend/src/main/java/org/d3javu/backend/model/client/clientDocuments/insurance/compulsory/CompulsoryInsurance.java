@@ -15,7 +15,7 @@ public class CompulsoryInsurance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "number", nullable = false)
     private String number;

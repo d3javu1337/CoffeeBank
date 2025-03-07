@@ -19,7 +19,7 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "surname", nullable = false, length = 50)
     private String surname;
@@ -37,7 +37,8 @@ public class Client {
     private String phoneNumber;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "documents_id", nullable = false)
+//    @JoinColumn(name = "documents_id", nullable = false)
+    @JoinColumn(name = "documents_id", nullable = true)
     private Documents documents;
 
     @Column(name = "email", nullable = false)
@@ -51,4 +52,19 @@ public class Client {
 
     @Column(name = "blocked", nullable = false)
     private boolean isBlocked = false;
+
+    public Client(String surname, String name, String patronymic, LocalDate dateOfBirth,
+                  String phoneNumber, Documents documents, String email, String passwordHash,
+                  List<PersonalAccount> personalAccounts) {
+        this.surname = surname;
+        this.name = name;
+        this.patronymic = patronymic;
+        this.dateOfBirth = dateOfBirth;
+        this.phoneNumber = phoneNumber;
+        this.documents = documents;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.personalAccounts = personalAccounts;
+        this.personalAccounts.getFirst().setLinkedClient(this);
+    }
 }

@@ -1,19 +1,25 @@
 package org.d3javu.backend.model.card;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.d3javu.backend.model.account.PersonalAccount;
 
 import java.sql.Date;
 
 @Entity
 @Table(name = "bank_card")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 50)
     private String cardName;
 
     @Column(name = "type", nullable = false)
@@ -23,20 +29,19 @@ public class Card {
     @Column(name = "number", nullable = false, unique = true)
     private String cardNumber;
 
-    @Column(name = "expiration_date", nullable = false)
+    @Column(name = "expiration_date", nullable = false, updatable = false)
     private  Date expirationDate;
 
     @ManyToOne
     @JoinColumn(name = "linked_personal_account_id", nullable = false)
     private PersonalAccount linkedPersonalAccount;
 
-    @Column(name = "pin_code_hash")
+    @Column(name = "pin_code_hash", nullable = false)
     private String pinCodeHash;
 
-    @Column(name = "cvv", nullable = false)
+    @Column(name = "cvv", nullable = false, updatable = false)
     private String code;
 
-    public Card() {}
 
 //    public Card(ECardType cardType, String pinCode, PersonalAccount acc){
 //        this.cardName = cardType.getDefaultCardName();
