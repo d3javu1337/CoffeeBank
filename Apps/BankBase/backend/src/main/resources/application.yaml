@@ -11,6 +11,13 @@ spring:
       format_sql: true
     hibernate:
       ddl-auto: create-drop
+  kafka:
+    producer:
+      bootstrap-servers: "localhost:29092, localhost:39092, localhost:49092"
+logging:
+  level:
+    org.apache.kafka.clients.NetworkClient: error
+
 springdoc:
   swagger-ui:
     path: /swagger-ui/index.html

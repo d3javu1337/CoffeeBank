@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.d3javu.backend.model.account.PersonalAccount;
+import org.d3javu.backend.model.account.Account;
 import org.d3javu.backend.model.client.clientDocuments.Documents;
 
 import java.time.LocalDate;
@@ -48,14 +48,15 @@ public class Client {
     private String passwordHash;
 
     @OneToMany(mappedBy = "linkedClient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<PersonalAccount> personalAccounts;
+    private List<Account> accounts;
 
     @Column(name = "blocked", nullable = false)
     private boolean isBlocked = false;
 
+
     public Client(String surname, String name, String patronymic, LocalDate dateOfBirth,
                   String phoneNumber, Documents documents, String email, String passwordHash,
-                  List<PersonalAccount> personalAccounts) {
+                  List<Account> accounts) {
         this.surname = surname;
         this.name = name;
         this.patronymic = patronymic;
@@ -64,7 +65,7 @@ public class Client {
         this.documents = documents;
         this.email = email;
         this.passwordHash = passwordHash;
-        this.personalAccounts = personalAccounts;
-        this.personalAccounts.getFirst().setLinkedClient(this);
+        this.accounts = accounts;
+        this.accounts.getFirst().setLinkedClient(this);
     }
 }

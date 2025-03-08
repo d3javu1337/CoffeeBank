@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.d3javu.backend.model.account.PersonalAccount;
+import org.d3javu.backend.model.account.Account;
 
 import java.sql.Date;
 
@@ -26,21 +26,21 @@ public class Card {
     @Enumerated(EnumType.STRING)
     private ECardType cardType;
 
-    @Column(name = "number", nullable = false, unique = true)
+    @Column(name = "number", nullable = false, unique = true, length = 16)
     private String cardNumber;
 
     @Column(name = "expiration_date", nullable = false, updatable = false)
-    private  Date expirationDate;
+    private Date expirationDate;
 
     @ManyToOne
     @JoinColumn(name = "linked_personal_account_id", nullable = false)
-    private PersonalAccount linkedPersonalAccount;
+    private Account linkedAccount;
 
-    @Column(name = "pin_code_hash", nullable = false)
-    private String pinCodeHash;
+    @Column(name = "pin_hash", nullable = false)
+    private String pinHash;
 
-    @Column(name = "cvv", nullable = false, updatable = false)
-    private String code;
+    @Column(name = "security_code", nullable = false, updatable = false, length = 3)
+    private String securityCode;
 
 
 //    public Card(ECardType cardType, String pinCode, PersonalAccount acc){
