@@ -1,6 +1,6 @@
 package org.d3javu.backend.model.account;
 
-public enum EAccountType {
+public enum AccountType {
     PERSONAL,
     BUSINESS
 }

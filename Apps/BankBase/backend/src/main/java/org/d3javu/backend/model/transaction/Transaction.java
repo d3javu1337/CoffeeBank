@@ -23,16 +23,22 @@ public class Transaction {
     @JoinColumn(name = "from_id")
     private Account from;
 
+    @Column(name = "from_name")
+    private String fromName;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "to_id", nullable = false)
     private Account to;
+
+    @Column(name = "to_name")
+    private String toName;
 
     @Column(name = "money", nullable = false, scale = 2)
     private Double money;
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ETransaction type;
+    private TransactionType type;
 
     @Column(name = "is_completed", nullable = false)
     private boolean isCompleted;
@@ -40,7 +46,7 @@ public class Transaction {
     @Column(name = "commited_at", nullable = false)
     private LocalDateTime commitedAt;
 
-    public Transaction(Account from, Account to, Double money, ETransaction type) {
+    public Transaction(Account from, Account to, Double money, TransactionType type) {
         this.from = from;
         this.to = to;
         this.money = money;

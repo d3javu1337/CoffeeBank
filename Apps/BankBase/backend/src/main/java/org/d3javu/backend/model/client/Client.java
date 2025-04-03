@@ -36,7 +36,7 @@ public class Client {
     @Column(name = "phone_number", nullable = false, length = 30)
     private String phoneNumber;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "client")
 //    @JoinColumn(name = "documents_id", nullable = false)
     @JoinColumn(name = "documents_id", nullable = true)
     private Documents documents;
@@ -50,8 +50,8 @@ public class Client {
     @OneToMany(mappedBy = "linkedClient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Account> accounts;
 
-    @Column(name = "blocked", nullable = false)
-    private boolean isBlocked = false;
+    @Column(name = "is_enabled", nullable = false)
+    private boolean isEnabled = true;
 
 
     public Client(String surname, String name, String patronymic, LocalDate dateOfBirth,

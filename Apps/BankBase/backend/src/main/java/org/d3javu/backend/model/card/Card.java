@@ -9,7 +9,7 @@ import org.d3javu.backend.model.account.Account;
 import java.sql.Date;
 
 @Entity
-@Table(name = "bank_card")
+@Table(name = "card")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +24,7 @@ public class Card {
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ECardType cardType;
+    private CardType cardType;
 
     @Column(name = "number", nullable = false, unique = true, length = 16)
     private String cardNumber;
@@ -33,7 +33,7 @@ public class Card {
     private Date expirationDate;
 
     @ManyToOne
-    @JoinColumn(name = "linked_personal_account_id", nullable = false)
+    @JoinColumn(name = "account_id", nullable = false)
     private Account linkedAccount;
 
     @Column(name = "pin_hash", nullable = false)

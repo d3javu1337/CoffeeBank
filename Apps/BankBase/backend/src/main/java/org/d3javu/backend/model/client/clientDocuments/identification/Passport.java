@@ -3,7 +3,7 @@ package org.d3javu.backend.model.client.clientDocuments.identification;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.d3javu.backend.model.client.clientDocuments.assets.EGender;
+import org.d3javu.backend.model.client.clientDocuments.assets.Gender;
 
 import java.sql.Date;
 
@@ -21,21 +21,21 @@ public class Passport {
     @Column(name = "number", nullable = false, length = 10, unique = true)
     private String number;
 
-    @Column(name = "surname", nullable = false)
+    @Column(name = "surname", nullable = false, length = 50)
     private String surname;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "patronymic", nullable = false)
+    @Column(name = "patronymic", nullable = false, length = 50)
     private String patronymic;
 
     @Column(name = "date_of_birth", nullable = false)
     private Date dateOfBirth;
 
-    @Column(name = "gender", nullable = false)
+    @Column(name = "gender", nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private EGender gender;
+    private Gender gender;
 
     @Column(name = "department", nullable = false)
     private String department;
@@ -59,13 +59,13 @@ public class Passport {
     private String houseNumber;
 
     @Column(name = "apartment_number", nullable = false)
-    private int apartmentNumber;
+    private Integer apartmentNumber;
 
     public Passport() {}
 
     public Passport(String number, String surname, String name, String patronymic, Date dateOfBirth,
-                    EGender gender, String department, String codeOfDepartment, Date dateOfIssue,
-                    String region, String city, String street, String houseNumber, int apartmentNumber) {
+                    Gender gender, String department, String codeOfDepartment, Date dateOfIssue,
+                    String region, String city, String street, String houseNumber, Integer apartmentNumber) {
         this.number = number;
         this.surname = surname;
         this.name = name;

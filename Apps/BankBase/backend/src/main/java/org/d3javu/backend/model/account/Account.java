@@ -29,23 +29,23 @@ public class Account {
     private List<Card> linkedCards = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "linked_client_id")
+    @JoinColumn(name = "client_id")
     private Client linkedClient;
 
-    @Column(name = "type")
+    @Column(name = "type", length = 10)
     @Enumerated(EnumType.STRING)
-    private EAccountType accountType;
+    private AccountType accountType;
 
     public Account() {
         this.accountName = "Персональный счёт";
         this.accountDeposit = 0d;
-        this.accountType = EAccountType.PERSONAL;
+        this.accountType = AccountType.PERSONAL;
     }
 
     public Account(Client client) {
         this.accountName = "Персональный счёт";
         this.accountDeposit = 0d;
         this.linkedClient = client;
-        this.accountType = EAccountType.PERSONAL;
+        this.accountType = AccountType.PERSONAL;
     }
 }

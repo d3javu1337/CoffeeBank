@@ -3,7 +3,7 @@ package org.d3javu.backend.controllers;
 import lombok.RequiredArgsConstructor;
 import org.d3javu.backend.model.account.Account;
 import org.d3javu.backend.model.client.Client;
-import org.d3javu.backend.model.transaction.ETransaction;
+import org.d3javu.backend.model.transaction.TransactionType;
 import org.d3javu.backend.model.transaction.Transaction;
 import org.d3javu.backend.repository.ClientRepository;
 import org.d3javu.backend.repository.TransactionRepository;
@@ -64,7 +64,7 @@ public class TestController implements CommandLineRunner {
                 client1.getAccounts().getFirst(),
                 client2.getAccounts().getFirst(),
                 300d,
-                ETransaction.TRANSFER
+                TransactionType.TRANSFER
         );
         this.transactionService.transfer(transaction);
         this.transactionRepository.saveAndFlush(transaction);
@@ -72,7 +72,7 @@ public class TestController implements CommandLineRunner {
                 client1.getAccounts().getFirst(),
                 client2.getAccounts().getFirst(),
                 300d,
-                ETransaction.TRANSFER
+                TransactionType.TRANSFER
         );
         this.transactionService.transfer(transaction1);
         this.transactionRepository.saveAndFlush(transaction1);

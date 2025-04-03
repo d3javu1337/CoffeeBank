@@ -1,6 +1,6 @@
 package org.d3javu.backend.model.card;
 
-public enum ECardType {
+public enum CardType {
     credit("Кредитная карта"),
     debit("Дебетовая карта"),
     overdraft("Карта с овердрафтом"),
@@ -8,7 +8,7 @@ public enum ECardType {
 
     private final String CardType;
 
-    ECardType(String defaultName){
+    CardType(String defaultName){
         this.CardType = defaultName;
     }
 

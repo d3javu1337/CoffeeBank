@@ -1,6 +1,6 @@
 package org.d3javu.backend.model.client.clientDocuments.assets;
 
-public enum EGender {
+public enum Gender {
     Мужской,
     Женский
 }

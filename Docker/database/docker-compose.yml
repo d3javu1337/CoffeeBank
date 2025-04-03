@@ -16,7 +16,7 @@ services:
     ports:
       - '5433:5432'
     volumes:
-#      - ./src/main/resources/sql/create.sql:/docker-entrypoint-initdb.d/001.sql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/001.sql
 #      - ./src/main/resources/sql/insert.sql:/docker-entrypoint-initdb.d/002.sql
       - pg_data:/var/lib/postgresql/data
     hostname: database

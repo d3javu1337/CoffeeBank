@@ -20,6 +20,8 @@ public class TransactionService {
     public boolean transfer(Transaction transaction) {
 
         transaction.setCommitedAt(LocalDateTime.now(this.zoneId));
+        transaction.setFromName(transaction.getFrom().getLinkedClient().getName());
+        transaction.setToName(transaction.getTo().getLinkedClient().getName());
 
         if(transaction.getFrom().getAccountDeposit() < transaction.getMoney()){
             transaction.setCompleted(false);
