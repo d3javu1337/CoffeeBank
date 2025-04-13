@@ -7,15 +7,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.d3javu.backend.dto.client.ClientAuth;
 import org.d3javu.backend.dto.client.ClientCreateRecord;
-import org.d3javu.backend.dto.client.CompactClientReadDto;
 import org.d3javu.backend.security.JWT.JwtCore;
-import org.d3javu.backend.security.JWT.dtos.JwtResponse;
 import org.d3javu.backend.security.clientsessions.ClientSessionsService;
 import org.d3javu.backend.service.AuthService;
 import org.d3javu.backend.service.ClientService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,20 +24,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.d3javu.backend.security.JWT.TokenType.ACCESS;
 import static org.d3javu.backend.security.JWT.TokenType.REFRESH;
 
-/**
- * logic of this should be look like only for registration, login and token generation. Logic:
- * Access token is valid? -> not here. In JwtRequestFiler. |
- * Access token is not valid -> 401-unauthorized -> request from frontend for new access token by refresh token. |
- * If refresh token also isn`t valid -> 401-unauthorized -> should ask a new pair of tokens by login and pwd. |
- * For "sessions" of user -> mongo with collection like user -> sessions (only refresh tokens). |
- * (should think about deleting expired tokens)
- */
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -56,34 +48,32 @@ public class AuthController {
     @Value("${jwt.refresh_cookie_name}")
     private String refreshCookieName;
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public CompactClientReadDto createClient(@RequestBody ClientCreateRecord clientCreateRecord) {
-        log.debug("createClient: clientCreateRecord {}", clientCreateRecord);
-        return this.clientService.registration(clientCreateRecord);
+    public ResponseEntity<?> createClient(@RequestBody ClientCreateRecord clientCreateRecord) {
+        if (!this.clientService.registration(clientCreateRecord)){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Registration failed. This email is already registered");
+        }
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody ClientAuth clientAuth,
                                    HttpServletRequest request, HttpServletResponse response) {
+
+        log.info("started at: {}", Instant.now());
+        // processing above a second (hope it`s only because bcrypt w/ strength 13)
         try{
             this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(clientAuth.email(), clientAuth.password()));
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
-
+        log.info("finished at: {}", Instant.now());
 
         var client = this.clientService.loadUserByUsername(clientAuth.email());
-
-        log.info("user-agent: {}", request.getHeader("User-Agent"));
 
         var tokens = this.authService.login(client, request);
 
         this.setCookie(response, tokens.refreshToken());
-
-
-
-        log.debug("login method -> tokens: {}", tokens);
 
         return ResponseEntity.ok(tokens.accessToken());
     }
@@ -98,8 +88,6 @@ public class AuthController {
         var tokens = this.authService.refresh(this.clientService.loadUserByUsername(email));
 
         this.setCookie(response, tokens.refreshToken());
-
-        log.debug("refresh method -> tokens: {}", tokens);
 
         return ResponseEntity.ok(tokens.accessToken());
     }
@@ -116,17 +104,6 @@ public class AuthController {
     public ResponseEntity<?> closeSession(HttpServletRequest request, HttpServletResponse response) {
         return ResponseEntity.ok("closeSession");
     }
-
-/*        @GetMapping("/verify")
-        public ResponseEntity<?> verify(HttpServletRequest request, HttpServletResponse response) {
-            var token = request.getHeader("Authorization");
-            var refreshCookie = new Cookie("refreshTest", "set refresh token here");
-            refreshCookie.setHttpOnly(true);
-    //        refreshCookie.setSecure(true);
-            refreshCookie.setMaxAge((int)Duration.between(LocalDateTime.now(), LocalDateTime.now().plusMonths(2)).toSeconds());
-            response.addCookie(refreshCookie);
-            return ResponseEntity.ok(jwtCore.getUsername(token.substring(7), ACCESS));
-        }*/
 
     private void setCookie(HttpServletResponse response, String refreshToken) {
         Cookie refreshCookie = new Cookie(this.refreshCookieName, refreshToken);

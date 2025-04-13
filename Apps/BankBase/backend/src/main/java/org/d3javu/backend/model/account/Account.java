@@ -2,6 +2,7 @@ package org.d3javu.backend.model.account;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.d3javu.backend.model.card.Card;
 import org.d3javu.backend.model.client.Client;
@@ -13,6 +14,7 @@ import java.util.List;
 @Table(name = "account")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Account {
 
     @Id
@@ -20,10 +22,10 @@ public class Account {
     private Long id;
 
     @Column(name = "account_name", nullable = false, length = 50)
-    private String accountName;
+    private String accountName = "Персональный счёт";
 
     @Column(name = "deposit", nullable = false, scale = 2)
-    private Double accountDeposit;
+    private Double accountDeposit = 0d;
 
     @OneToMany(mappedBy = "linkedAccount", cascade = CascadeType.ALL)
     private List<Card> linkedCards = new ArrayList<>();
@@ -34,18 +36,18 @@ public class Account {
 
     @Column(name = "type", length = 10)
     @Enumerated(EnumType.STRING)
-    private AccountType accountType;
+    private AccountType accountType = AccountType.PERSONAL;
 
-    public Account() {
-        this.accountName = "Персональный счёт";
-        this.accountDeposit = 0d;
-        this.accountType = AccountType.PERSONAL;
-    }
+//    public Account() {
+//        this.accountName = "Персональный счёт";
+//        this.accountDeposit = 0d;
+//        this.accountType = AccountType.PERSONAL;
+//    }
 
     public Account(Client client) {
         this.accountName = "Персональный счёт";
         this.accountDeposit = 0d;
         this.linkedClient = client;
-        this.accountType = AccountType.PERSONAL;
+//        this.accountType = AccountType.PERSONAL;
     }
 }

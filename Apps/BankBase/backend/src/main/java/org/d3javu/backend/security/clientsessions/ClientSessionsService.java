@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.d3javu.backend.security.JWT.JwtCore;
 import org.d3javu.backend.security.JWT.TokenType;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class ClientSessionsService {
 
     private final ClientSessionsRepository clientSessionsRepository;
 
+    @Async
     public void registerClientSession(String email, String token, String device) {
         var expiredAt = this.jwtCore.getExpiration(token, TokenType.REFRESH);
         var issuedAt = this.jwtCore.getIssuedAt(token, TokenType.REFRESH);

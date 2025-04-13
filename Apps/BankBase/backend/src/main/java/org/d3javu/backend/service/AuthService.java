@@ -29,11 +29,8 @@ public class AuthService {
 
         var refreshToken = jwtCore.generateRefreshToken(userDetails);
 
-        var session = new ClientSessions(userDetails.getUsername());
-//        session.addSession(refreshToken);
-
-        this.clientSessionsService.registerClientSession
-                (userDetails.getUsername(), refreshToken, request.getHeader("User-Agent"));
+        CompletableFuture.runAsync(() ->this.clientSessionsService.registerClientSession
+                (userDetails.getUsername(), refreshToken, request.getHeader("User-Agent")));
 
         return new JwtResponse(
                 this.jwtCore.generateAccessToken(userDetails),

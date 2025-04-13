@@ -37,7 +37,7 @@ create table documents(
 
 create table account(
     id bigserial primary key,
-    account_name varchar(50) not null default 'счёт',
+    account_name varchar(50) not null default 'Cчёт',
     deposit float(2) default 0,
     client_id bigint not null,
     type varchar(10) not null

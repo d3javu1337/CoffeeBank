@@ -1,9 +1,8 @@
 package org.d3javu.backend.dto.account;
 
-import lombok.ToString;
 import org.d3javu.backend.model.account.AccountType;
 
-public interface CompactAccountReadDto {
+public interface AccountReadDto {
 
     Long getId();
     String getAccountName();

@@ -36,10 +36,8 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
             nativeQuery = true)
     Optional<Long> findIdByEmail(String email);
 
-//    @Transactional
-//    @Query(value = "insert into client (surname, name, patronymic, date_of_birth, email, phone_number, password_hash) " +
-//            "values (:en.surname, :en.name, :en.patronymic, :en.dateOfBirth, en.email, en.phone_number, )",
-//            nativeQuery = true)
-//    Long createClient(ClientCreateRecord en);
+    @Query(value = "select count(*) > 0 from client c where c.email= : email",
+            nativeQuery = true)
+    Boolean existsClientByEmail(String email);
 
 }

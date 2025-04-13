@@ -20,14 +20,14 @@ public class Card {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 50)
-    private String cardName;
+    private String name;
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private CardType cardType;
+    private CardType type;
 
     @Column(name = "number", nullable = false, unique = true, length = 16)
-    private String cardNumber;
+    private String number;
 
     @Column(name = "expiration_date", nullable = false, updatable = false)
     private Date expirationDate;
