@@ -2,9 +2,8 @@ package org.d3javu.backend.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.d3javu.backend.dto.requests.IdRequest;
-import org.d3javu.backend.dto.requests.NameRequest;
 import org.d3javu.backend.dto.requests.account.AccountIdRequest;
+import org.d3javu.backend.dto.requests.account.AccountRenameRequest;
 import org.d3javu.backend.service.AccountService;
 import org.d3javu.backend.utils.SecurityUtil;
 import org.springframework.http.HttpStatus;
@@ -46,8 +45,8 @@ public class AccountController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping("/{id}")
-    public void renameAccount(@RequestBody NameRequest nameRequest, @PathVariable Long id) {
-        this.accountService.renameAccount(this.securityUtil.getClientEmail(), id, nameRequest.name());
+    public void renameAccount(@RequestBody AccountRenameRequest accountRenameRequest, @PathVariable Long id) {
+        this.accountService.renameAccount(this.securityUtil.getClientEmail(), id, accountRenameRequest.newName());
     }
 
 //    @DeleteMapping("/{id}")
