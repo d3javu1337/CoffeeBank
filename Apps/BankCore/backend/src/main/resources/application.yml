@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:postgresql://localhost:5433/CoffeeBank
+    username: postgres
+    password: postgres
