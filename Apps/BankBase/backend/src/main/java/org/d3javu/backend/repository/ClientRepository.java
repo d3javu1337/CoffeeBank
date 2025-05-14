@@ -36,7 +36,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
             nativeQuery = true)
     Optional<Long> findIdByEmail(String email);
 
-    @Query(value = "select count(*) > 0 from client c where c.email= : email",
+    @Query(value = "select count(*) > 0 from client c where c.email= :email",
             nativeQuery = true)
     Boolean existsClientByEmail(String email);
 

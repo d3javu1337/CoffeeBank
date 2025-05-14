@@ -39,11 +39,16 @@ public class CardService {
     }
 
     @Async
-    public void createCard(String email, AccountIdRequest accountIdRequest){
+    public void createCard(String email, org.d3javu.backend.dto.requests.card.CardCreateRequest cardCreateRequest){
         var clientId = this.securityUtil.getClientId(email);
-        if(!this.accountService.isClientOwnsAccount(clientId, accountIdRequest.accountId())) return;
+        if(!this.accountService.isClientOwnsAccount(clientId, cardCreateRequest.accountId())) return;
         this.kafkaTemplate.send("card-create-topic",
-                new CardCreateRequest(clientId, email, accountIdRequest.accountId()));
+                new CardCreateRequest(
+                        clientId,
+                        email,
+                        cardCreateRequest.accountId(),
+                        cardCreateRequest.type(),
+                        cardCreateRequest.type().getDefaultCardName()));
     }
 
     @Async

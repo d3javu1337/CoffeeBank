@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.d3javu.backend.dto.requests.account.AccountIdRequest;
 import org.d3javu.backend.dto.requests.card.AccountIdAndCardIdRequest;
+import org.d3javu.backend.dto.requests.card.CardCreateRequest;
 import org.d3javu.backend.dto.requests.card.CardRenameRequest;
-import org.d3javu.backend.kafka.requests.card.CardCreateRequest;
 import org.d3javu.backend.service.CardService;
 import org.d3javu.backend.utils.SecurityUtil;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,7 @@ public class CardController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping
-    public void createCard(@RequestBody AccountIdRequest request) {
+    public void createCard(@RequestBody CardCreateRequest request) {
         this.cardService.createCard(this.securityUtil.getClientEmail(), request);
     }
 

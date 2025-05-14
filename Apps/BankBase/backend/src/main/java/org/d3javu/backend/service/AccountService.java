@@ -15,8 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
@@ -40,9 +44,19 @@ public class AccountService {
 
     @Async
     public void createAccount(String email) {
-        this.kafkaTemplate.send("account-create-topic",
-                new AccountCreateRequest
-                        (this.clientService.getClientIdByEmail(email), email));
+        var t = this.kafkaTemplate.send(
+                "account-create-topic",
+                0,
+                Instant.now().toEpochMilli(),
+                "test",
+                new AccountCreateRequest(this.clientService.getClientIdByEmail(email), email));
+        try {
+            System.out.println("--------------------------------------------------");
+            System.out.println(t.get().getProducerRecord());
+            System.out.println("--------------------------------------------------");
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Async

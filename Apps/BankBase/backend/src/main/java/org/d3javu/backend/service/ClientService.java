@@ -3,10 +3,12 @@ package org.d3javu.backend.service;
 import lombok.extern.slf4j.Slf4j;
 import org.d3javu.backend.dto.client.ClientCreateRecord;
 import org.d3javu.backend.dto.client.CompactClientReadDto;
+import org.d3javu.backend.kafka.requests.client.ClientCreateRequest;
 import org.d3javu.backend.repository.ClientRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,11 +31,11 @@ public class ClientService implements UserDetailsService {
 
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
-    private final KafkaTemplate<String, ClientCreateRecord> kafkaTemplate;
+    private final KafkaTemplate<String, ClientCreateRequest> kafkaTemplate;
 
     public ClientService(@Lazy ClientRepository clientRepository,
                          @Lazy PasswordEncoder passwordEncoder,
-                         @Lazy KafkaTemplate<String, ClientCreateRecord> kafkaTemplate) {
+                         @Lazy KafkaTemplate<String, ClientCreateRequest> kafkaTemplate) {
         this.clientRepository = clientRepository;
         this.passwordEncoder = passwordEncoder;
         this.kafkaTemplate = kafkaTemplate;
@@ -42,7 +44,10 @@ public class ClientService implements UserDetailsService {
 
     public boolean registration(ClientCreateRecord clientCreateRecord) {
         if(this.clientRepository.existsClientByEmail(clientCreateRecord.email())) return false;
-        CompletableFuture.runAsync(() -> this.kafkaTemplate.send("client-registration-topic", clientCreateRecord));
+        CompletableFuture.runAsync(() ->
+            this.kafkaTemplate.send("client-registration-topic",
+                new ClientCreateRequest(clientCreateRecord, this.passwordEncoder.encode(clientCreateRecord.password())))
+    );
         return true;
     }
 

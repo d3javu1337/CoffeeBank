@@ -13,8 +13,8 @@ spring:
       ddl-auto: validate
   kafka:
     producer:
-#      bootstrap-servers: "localhost:29092, localhost:39092, localhost:49092"
-      bootstrap-servers: "localhost:29092"
+      bootstrap-servers: "localhost:29092, localhost:39092, localhost:49092"
+#      bootstrap-servers: "localhost:29092"
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     admin:
