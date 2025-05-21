@@ -94,14 +94,10 @@ public class AuthController {
         return ResponseEntity.ok("restore password");
     }
 
-    @GetMapping("/sessions")
-    public ResponseEntity<?> getAllSessions() {
-        return ResponseEntity.ok(this.clientSessionsService.getAllClientSessions(SecurityContextHolder.getContext().getAuthentication().getName()));
-    }
 
-    public ResponseEntity<?> closeSession(HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.ok("closeSession");
-    }
+//    public ResponseEntity<?> closeSession(HttpServletRequest request, HttpServletResponse response) {
+//        return ResponseEntity.ok("closeSession");
+//    }
 
     private void setCookie(HttpServletResponse response, String refreshToken) {
         Cookie refreshCookie = new Cookie(this.refreshCookieName, refreshToken);

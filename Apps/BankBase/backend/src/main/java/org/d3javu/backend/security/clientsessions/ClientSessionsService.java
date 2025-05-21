@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -23,7 +24,7 @@ public class ClientSessionsService {
         var issuedAt = this.jwtCore.getIssuedAt(token, TokenType.REFRESH);
         if (!this.clientSessionsRepository.existsClientSessionsByEmail(email)) {
 
-            this.clientSessionsRepository.save(new ClientSessions(email, token, issuedAt, expiredAt));
+            this.clientSessionsRepository.save(new ClientSessions(email, token, issuedAt, expiredAt, device));
             return;
         }
         var sessions = this.clientSessionsRepository.findClientSessionsByEmail(email);
@@ -33,6 +34,15 @@ public class ClientSessionsService {
 
     public List<ClientSessions> getAllClientSessions(String email) {
         return this.clientSessionsRepository.findAllByEmail(email);
+    }
+
+    @Async
+    public void closeSession(String email, UUID sessionId) {
+        var sessions = this.clientSessionsRepository.findClientSessionsByEmail(email);
+        sessions
+                .getSessions()
+                .removeIf(session -> session.getId().equals(sessionId));
+        this.clientSessionsRepository.save(sessions);
     }
 
 }

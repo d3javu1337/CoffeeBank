@@ -23,19 +23,15 @@ public class ClientSessions {
 
     private List<Session> sessions;
 
-    private Date issuedAt;
-
-    private Date expiredAt;
-
     public ClientSessions(String email) {
         this.email = email;
         this.sessions = new ArrayList<>();
     }
 
-    public ClientSessions(String email, String token, Date issuedAt, Date expiredAt) {
+    public ClientSessions(String email, String token, Date issuedAt, Date expiredAt, String deviceName) {
         this.email = email;
         this.sessions = new ArrayList<>();
-        var session = new Session(token, issuedAt, expiredAt);
+        var session = new Session(deviceName, token, issuedAt, expiredAt);
         this.sessions.add(session);
     }
 
