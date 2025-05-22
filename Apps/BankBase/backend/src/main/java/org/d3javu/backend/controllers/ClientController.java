@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.d3javu.backend.security.JWT.JwtCore;
 import org.d3javu.backend.service.ClientService;
+import org.d3javu.backend.utils.SecurityUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ClientController {
 
-    private final JwtCore jwtCore;
     private final ClientService clientService;
+    private final SecurityUtil securityUtil;
+
     @GetMapping
     public ResponseEntity<?> getClient() {
-        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var email = this.securityUtil.getClientEmail();
         return ResponseEntity.ok(this.clientService.getClientByEmail(email));
     }
 

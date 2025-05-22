@@ -46,26 +46,24 @@ public class AuthController {
     @Value("${jwt.refresh_cookie_name}")
     private String refreshCookieName;
 
-    @PostMapping
+    @PostMapping("/registration")
     public ResponseEntity<?> createClient(@RequestBody ClientCreateRecord clientCreateRecord) {
         if (!this.clientService.registration(clientCreateRecord)){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Registration failed. This email is already registered");
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody ClientAuth clientAuth,
                                    HttpServletRequest request, HttpServletResponse response) {
 
-        log.info("started at: {}", Instant.now());
         // processing above a second (hope it`s only because bcrypt w/ strength 13)
         try{
             this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(clientAuth.email(), clientAuth.password()));
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
-        log.info("finished at: {}", Instant.now());
 
         var client = this.clientService.loadUserByUsername(clientAuth.email());
 
@@ -78,7 +76,8 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
-        var refreshToken = Arrays.stream(request.getCookies()).filter(en -> en.getName().equals(this.refreshCookieName)).findFirst()
+        var refreshToken = Arrays.stream(request.getCookies())
+                .filter(en -> en.getName().equals(this.refreshCookieName)).findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED)).getValue();
 
         var email = this.jwtCore.getUsername(refreshToken, REFRESH);
@@ -93,11 +92,6 @@ public class AuthController {
     public ResponseEntity<?> restorePassword(HttpServletRequest request, HttpServletResponse response) {
         return ResponseEntity.ok("restore password");
     }
-
-
-//    public ResponseEntity<?> closeSession(HttpServletRequest request, HttpServletResponse response) {
-//        return ResponseEntity.ok("closeSession");
-//    }
 
     private void setCookie(HttpServletResponse response, String refreshToken) {
         Cookie refreshCookie = new Cookie(this.refreshCookieName, refreshToken);

@@ -30,6 +30,11 @@ public class CardController {
         return ResponseEntity.ok(card);
     }
 
+//    @GetMapping(params = {"AccountIdRequest"})
+//    public ResponseEntity<?> getCards(@RequestBody AccountIdRequest accountId) {
+//        return ResponseEntity.ok(this.cardService.getCardsByAccountId(accountId.accountId()));
+//    }
+
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping
     public void createCard(@RequestBody CardCreateRequest request) {

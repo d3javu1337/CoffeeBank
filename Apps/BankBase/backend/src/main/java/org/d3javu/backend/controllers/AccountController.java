@@ -44,9 +44,9 @@ public class AccountController {
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PatchMapping("/{id}")
-    public void renameAccount(@RequestBody AccountRenameRequest accountRenameRequest, @PathVariable Long id) {
-        this.accountService.renameAccount(this.securityUtil.getClientEmail(), id, accountRenameRequest.newName());
+    @PatchMapping
+    public void renameAccount(@RequestBody AccountRenameRequest accountRenameRequest) {
+        this.accountService.renameAccount(this.securityUtil.getClientEmail(), accountRenameRequest.id(), accountRenameRequest.newName());
     }
 
 //    @DeleteMapping("/{id}")

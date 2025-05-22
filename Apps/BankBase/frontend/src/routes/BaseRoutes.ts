@@ -1,0 +1,7 @@
+export const home_route = '/home'
+export const login_route = '/login'
+export const registration_route = '/registration'
+export const auth_route = '/auth'
+export const main_route = '/main'
+export const account_route = '/account'
+export const card_route = '/card'
