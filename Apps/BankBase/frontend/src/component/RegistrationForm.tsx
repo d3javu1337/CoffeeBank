@@ -22,7 +22,7 @@ const RegistrationForm: FC = () => {
     const [password, setPassword] = useState('');
     const {store} = useContext(Context);
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' , justifyContent: 'space-evenly'}}>
+        <div style={{ display: 'flex', flexDirection: 'column' , justifyContent: 'center', alignItems: 'center' }}>
             <input
                 onChange={(e) => setSurname(e.target.value)}
                 value={surname} type="text" placeholder="Ivanov" required />

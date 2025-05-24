@@ -4,11 +4,17 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Store from "./store/store";
+import ClientStore from "./store/ClientStore";
+import AccountStore from "./store/AccountStore";
+import CardStore from "./store/CardStore";
 
 const store = new Store();
+const clientStore = new ClientStore();
+const accountStore = new AccountStore();
+const cardStore = new CardStore();
 
 export const Context = createContext({
-    store,
+    store, clientStore, accountStore, cardStore
 })
 
 const root = ReactDOM.createRoot(
@@ -16,7 +22,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   // <React.StrictMode>
-    <Context.Provider value={{store}}>
+    <Context.Provider value={{store, clientStore, accountStore, cardStore}}>
         <App />
     </Context.Provider>
   // </React.StrictMode>

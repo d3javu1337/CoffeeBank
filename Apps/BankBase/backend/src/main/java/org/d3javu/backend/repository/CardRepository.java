@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    @Query(value = "select c.name as name, c.type as type, c.number as number from card c where account_id= :accountId",
+    @Query(value = "select c.id as id, c.name as name, c.type as type, c.number as number from card c where account_id= :accountId",
             nativeQuery = true)
     List<CompactCardReadDto> getCompactCardsByAccountId(Long accountId);
 

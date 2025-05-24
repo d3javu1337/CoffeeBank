@@ -8,14 +8,14 @@ const AuthPage: FC = () => {
 
     if (!isLoginPage) {
         return (
-            <div>
+            <div style={{width:'100%', border:'1px solid black',display:'flex', flexDirection:'column', justifyContent:'center', alignItems: 'center'}}>
                 <RegistrationForm/>
                 <button onClick={() => setIsLoginPage(true)}>switch to login</button>
             </div>
     );
     } else {
         return (
-            <div>
+            <div style={{width:'100%', border:'1px solid black', display:'flex', flexDirection:'column', height:'100%', justifyContent:'center', alignItems: 'center'}}>
                 <LoginForm/>
                 <button onClick={() => setIsLoginPage(false)}>switch to registration</button>
             </div>

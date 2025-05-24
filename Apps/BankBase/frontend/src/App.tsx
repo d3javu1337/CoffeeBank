@@ -1,11 +1,10 @@
 import React, {FC, useContext, useEffect} from 'react';
-import logo from './logo.svg';
 import './App.css';
-import LoginForm from "./component/LoginForm";
 import {Context} from "./index";
 import {observer} from "mobx-react-lite";
 import {BrowserRouter} from "react-router-dom";
 import AppRouter from "./component/AppRouter";
+import Header from "./component/Header";
 
 const App: FC = () => {
 
@@ -14,7 +13,7 @@ const App: FC = () => {
     if(localStorage.getItem('token')){
       store.checkAuth()
     }
-  }, [])
+  }, [store])
 
     if(store.isLoading){
         return (
@@ -24,6 +23,7 @@ const App: FC = () => {
 
   return (
       <BrowserRouter>
+          <Header />
           <AppRouter/>
           {/*<div className="App">*/}
           {/*    <h3>{store.isAuth ? 'authed' :  'not authed'}</h3>*/}

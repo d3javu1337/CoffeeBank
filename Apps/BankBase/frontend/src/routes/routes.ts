@@ -19,11 +19,11 @@ export const authenticatedRoutes = [
         Component: MainPage
     },
     {
-        path: account_route,
+        path: account_route + '/:accountId',
         Component: AccountPage
     },
     {
-        path: card_route,
+        path: account_route + '/:accountId' + card_route + '/:cardId',
         Component: CardPage
     }
 ]

@@ -22,10 +22,10 @@ public class CardController {
     private final SecurityUtil securityUtil;
 
     @GetMapping
-    public ResponseEntity<?> getCard(@RequestBody AccountIdAndCardIdRequest request) {
-        if(request.accountId() == null && request.cardId() == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
-        if(request.cardId() == null) return ResponseEntity.ok(this.cardService.getCardsByAccountId(request.accountId()));
-        var card = this.cardService.getCardById(request);
+    public ResponseEntity<?> getCard(@RequestParam("accountId") Long accountId, @RequestParam(value = "cardId", required = false) Long cardId) {
+        if(accountId == null && cardId == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
+        if(cardId == null) return ResponseEntity.ok(this.cardService.getCardsByAccountId(accountId));
+        var card = this.cardService.getCardById(accountId, cardId);
         if (card == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("unable to so this");
         return ResponseEntity.ok(card);
     }

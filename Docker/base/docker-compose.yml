@@ -6,6 +6,11 @@ name:
 volumes:
   mongo_data:
 
+networks:
+  appNetwork:
+    external: true
+    driver: bridge
+
 services:
   mongo:
     image: mongo:noble
@@ -26,3 +31,14 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: root
       ME_CONFIG_MONGODB_URL: mongodb://root:root@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+
+  service:
+    build:
+      context: '../../../CoffeeBank/Apps/BankBase/backend'
+      dockerfile: Dockerfile
+    ports:
+      - '127.0.0.1:8080:8080'
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://database:5432/CoffeeBank'
+    networks:
+      - appNetwork

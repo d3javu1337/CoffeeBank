@@ -21,15 +21,15 @@ public class AccountController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<?> getAccount(@RequestBody(required = false) AccountIdRequest request) {
-        if(request == null || request.accountId() == null) {
+    public ResponseEntity<?> getAccount(@RequestParam(value = "accountId", required = false) Long accountId) {
+        if(accountId == null) {
             return ResponseEntity.ok(this.accountService.getAccounts());
         }
 
-        var t = this.accountService.getAccount(request.accountId(), this.securityUtil.getClientId());
+        var t = this.accountService.getAccount(accountId, this.securityUtil.getClientId());
 
         if(t.isEmpty()){
-            log.warn("requested account id={} which does not belongs to userId={}", request.accountId(),
+            log.warn("requested account id={} which does not belongs to userId={}", accountId,
                     this.securityUtil.getClientId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("unable to do this");
         }

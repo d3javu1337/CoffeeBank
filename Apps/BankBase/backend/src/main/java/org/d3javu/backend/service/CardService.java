@@ -31,9 +31,9 @@ public class CardService {
         return this.cardRepository.getCompactCardsByAccountId(accountId);
     }
 
-    public CompactCardReadDto getCardById(AccountIdAndCardIdRequest accountIdAndCardId){
-        if (!this.accountService.isClientOwnsAccount(this.securityUtil.getClientId(), accountIdAndCardId.accountId())) return null;
-        return this.cardRepository.getCompactCardById(accountIdAndCardId.accountId(), accountIdAndCardId.cardId())
+    public CompactCardReadDto getCardById(Long accountId, Long cardId){
+        if (!this.accountService.isClientOwnsAccount(this.securityUtil.getClientId(), accountId)) return null;
+        return this.cardRepository.getCompactCardById(accountId, cardId)
                 .orElse(null);
 
     }

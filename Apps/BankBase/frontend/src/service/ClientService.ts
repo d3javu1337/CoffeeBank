@@ -5,6 +5,6 @@ import api from "../http";
 
 export default class ClientService {
     static async getClientInfo(): Promise<AxiosResponse<ClientCompact>> {
-        return api.get<ClientCompact>('/client')
+        return await api.get<ClientCompact>('/client')
     }
 }

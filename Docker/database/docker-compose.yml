@@ -3,6 +3,11 @@ version: '3.9'
 volumes:
   pg_data:
 
+networks:
+  appNetwork:
+    external: true
+    driver: bridge
+
 services:
   db:
     image: postgres:16.3-alpine
@@ -20,6 +25,9 @@ services:
 #      - ./src/main/resources/sql/insert.sql:/docker-entrypoint-initdb.d/002.sql
       - pg_data:/var/lib/postgresql/data
     hostname: database
+    container_name: database
+    networks:
+      - appNetwork
     deploy:
       resources:
         limits:

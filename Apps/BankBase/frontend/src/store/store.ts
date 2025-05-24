@@ -6,15 +6,21 @@ import {api_url} from "../http";
 
 export default class Store {
 
-    client = {} as ClientCompact
-    isAuth = false
+
+    // client = {} as ClientCompact
+    // isAuth = false
+    isAuth = true
     isLoading = false
 
     constructor() { makeAutoObservable(this) }
 
-    setClient(client: ClientCompact) {
-        this.client = client
-    }
+    // setClient(client: ClientCompact) {
+    //     this.client = client
+    // }
+
+    // get Client(): ClientCompact {
+    //     return this.client;
+    // }
 
     setIsAuth(isAuth: boolean) {
         this.isAuth = isAuth
@@ -62,6 +68,18 @@ export default class Store {
             console.log(response.data);
             localStorage.setItem('token', response.data)
             this.setIsAuth(true)
+        } catch (e) {
+            console.error(e)
+        } finally {
+            this.setIsLoading(false)
+        }
+    }
+
+    async logout() {
+        this.setIsLoading(true)
+        try {
+            localStorage.removeItem('token')
+            this.setIsAuth(false)
         } catch (e) {
             console.error(e)
         } finally {

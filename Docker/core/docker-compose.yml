@@ -2,3 +2,19 @@ version: '3.9'
 
 name: core
 
+networks:
+  appNetwork:
+    external: true
+    driver: bridge
+
+services:
+  service:
+    build:
+      context: '../../../CoffeeBank/Apps/BankCore/backend'
+      dockerfile: Dockerfile
+#    ports:
+#      - '127.0.0.1:8080:8082'
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://database:5432/CoffeeBank'
+    networks:
+      - appNetwork
