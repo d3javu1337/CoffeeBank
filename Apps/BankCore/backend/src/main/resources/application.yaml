@@ -28,11 +28,17 @@ spring:
 #      properties:
 #        spring.json.trusted.packages: "org.d3javu.backend.kafka.requests.account"
 #      isolation-level: read_uncommitted
-#logging:
-#  level:
-#    org.apache.kafka.clients.NetworkClient: error
+logging:
+  level:
+    org.apache.kafka.clients.NetworkClient: error
 springdoc:
   swagger-ui:
     path: /swagger-ui/index.html
 server:
   port: 28080
+grpc:
+  server:
+    port: 9090
+    ssl:
+      secure: false
+      enabled: false

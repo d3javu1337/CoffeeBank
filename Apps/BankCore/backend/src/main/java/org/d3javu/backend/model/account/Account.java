@@ -30,7 +30,10 @@ public class Account {
     @OneToMany(mappedBy = "linkedAccount", cascade = CascadeType.ALL)
     private List<Card> linkedCards = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "client_id")
+//    private Client linkedClient;
+    @OneToOne
     @JoinColumn(name = "client_id")
     private Client linkedClient;
 

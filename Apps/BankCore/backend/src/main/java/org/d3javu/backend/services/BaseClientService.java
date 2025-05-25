@@ -10,6 +10,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class BaseClientService {
@@ -34,6 +36,10 @@ public class BaseClientService {
                 request.passwordHash()
         );
         this.utilKafkaService.sendRequestToConfirmEmail(request.email());
+    }
+
+    public Optional<Long> getClientIdByPhoneNumber(String phoneNumber) {
+        return this.baseClientRepository.findClientByPhoneNumber(phoneNumber);
     }
 
     public void confirmEmail(String email) {

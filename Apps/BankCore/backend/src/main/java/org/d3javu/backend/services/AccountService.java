@@ -39,4 +39,12 @@ public class AccountService {
         return this.accountRepository.checkOwning(accountId, clientId, email);
     }
 
+    public Long getAccountIdByClientId(Long clientId) {
+        return this.accountRepository.findAccountByClientId(clientId);
+    }
+
+    public Boolean hasEnoughMoney(Long accountId, Double money) {
+        return this.accountRepository.hasEnoughMoney(accountId, money);
+    }
+
 }

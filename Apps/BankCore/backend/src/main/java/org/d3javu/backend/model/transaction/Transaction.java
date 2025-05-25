@@ -23,15 +23,11 @@ public class Transaction {
     @JoinColumn(name = "from_id")
     private Account from;
 
-    @Column(name = "from_name")
-    private String fromName;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "to_id", nullable = false)
     private Account to;
 
-    @Column(name = "to_name")
-    private String toName;
 
     @Column(name = "money", nullable = false, scale = 2)
     private Double money;

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface BaseClientRepository extends JpaRepository<Client, Long> {
@@ -26,5 +27,8 @@ public interface BaseClientRepository extends JpaRepository<Client, Long> {
     @Query(value = "update client set is_enabled=true where email= :email",
             nativeQuery = true)
     void confirmEmail(String email);
+
+    @Query(value = "select c.id from client c where c.phone_number= :phoneNumber", nativeQuery = true)
+    Optional<Long> findClientByPhoneNumber(String phoneNumber);
 
 }
