@@ -43,3 +43,7 @@ jwt:
 springdoc:
   swagger-ui:
     path: /swagger-ui/index.html
+
+grpc:
+  client:
+    authority: 'localhost:9090'

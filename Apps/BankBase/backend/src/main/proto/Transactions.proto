@@ -9,7 +9,7 @@ message TransferByPhoneNumberRequest {
 }
 
 message TransferByPhoneNumberResponse {
-  bool isCommited = 1;
+  bool isCompleted = 1;
 }
 
 service TransactionService {

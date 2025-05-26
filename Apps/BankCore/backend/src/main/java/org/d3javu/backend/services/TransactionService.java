@@ -7,6 +7,7 @@ import org.d3javu.backend.grpc.TransferByPhoneNumberRequest;
 import org.d3javu.backend.grpc.TransferByPhoneNumberResponse;
 import org.d3javu.backend.model.transaction.TransactionType;
 import org.d3javu.backend.repository.TransactionRepository;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class TransactionService extends org.d3javu.backend.grpc.TransactionServi
     private final BaseClientService baseClientService;
     private final AccountService accountService;
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @Override
     public void transferByPhoneNumber(TransferByPhoneNumberRequest request,
                                       StreamObserver<TransferByPhoneNumberResponse> responseObserver) {
@@ -27,7 +28,7 @@ public class TransactionService extends org.d3javu.backend.grpc.TransactionServi
         if(!this.accountService.hasEnoughMoney(senderAccountId, request.getMoney())){
             this.transactionRepository.createTransaction(senderAccountId, recipientAccountId, request.getMoney(),
                     TransactionType.TRANSFER, false);
-            responseObserver.onNext(TransferByPhoneNumberResponse.newBuilder().setIsCommited(false).build());
+            responseObserver.onNext(TransferByPhoneNumberResponse.newBuilder().setIsCompleted(false).build());
             responseObserver.onCompleted();
             return;
 //            throw new IllegalArgumentException("Not enough money");
@@ -36,7 +37,7 @@ public class TransactionService extends org.d3javu.backend.grpc.TransactionServi
         this.transactionRepository.sendMoneyToRecipient(recipientAccountId, request.getMoney());
         this.transactionRepository.createTransaction(senderAccountId, recipientAccountId, request.getMoney(),
                 TransactionType.TRANSFER, true);
-        responseObserver.onNext(TransferByPhoneNumberResponse.newBuilder().setIsCommited(true).build());
+        responseObserver.onNext(TransferByPhoneNumberResponse.newBuilder().setIsCompleted(true).build());
         responseObserver.onCompleted();
     }
 }

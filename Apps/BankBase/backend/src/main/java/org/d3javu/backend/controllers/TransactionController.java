@@ -28,9 +28,12 @@ public class TransactionController {
             return new ResponseEntity<>("request==null || phoneNumber==null || phoneNumber !matches as phone number",
                     HttpStatus.BAD_REQUEST);
         }
-        this.transactionService.transferByPhoneNumber(request.phoneNumber(), this.securityUtil.getClientId(), request.money());
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("resource is building rn");
-        return ResponseEntity.ok().build();
+        if (request.money() <=0 ) return new ResponseEntity<>("money<=0", HttpStatus.BAD_REQUEST);
+        if(this.transactionService.transferByPhoneNumber(request.phoneNumber(),
+                this.securityUtil.getClientId(), request.money())){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     public ResponseEntity<?> paymentInvoiceByNumber(@RequestBody PaymentNumberRequest request) {
