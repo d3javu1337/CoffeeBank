@@ -7,6 +7,7 @@ import org.d3javu.backend.dto.requests.account.AccountIdRequest;
 import org.d3javu.backend.dto.requests.card.AccountIdAndCardIdRequest;
 import org.d3javu.backend.dto.requests.card.CardRenameRequest;
 import org.d3javu.backend.kafka.requests.card.CardCreateRequest;
+import org.d3javu.backend.model.card.CardType;
 import org.d3javu.backend.repository.CardRepository;
 import org.d3javu.backend.utils.SecurityUtil;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -31,35 +32,34 @@ public class CardService {
         return this.cardRepository.getCompactCardsByAccountId(accountId);
     }
 
-    public CompactCardReadDto getCardById(Long accountId, Long cardId){
-        if (!this.accountService.isClientOwnsAccount(this.securityUtil.getClientId(), accountId)) return null;
-        return this.cardRepository.getCompactCardById(accountId, cardId)
+    public CompactCardReadDto getCardById(Long cardId){
+        return this.cardRepository.getCompactCardById(this.securityUtil.getClientAccountId(), cardId)
                 .orElse(null);
 
     }
 
     @Async
-    public void createCard(String email, org.d3javu.backend.dto.requests.card.CardCreateRequest cardCreateRequest){
+    public void createCard(String email, Long accountId, CardType type){
         var clientId = this.securityUtil.getClientId(email);
-        if(!this.accountService.isClientOwnsAccount(clientId, cardCreateRequest.accountId())) return;
+        if(!this.accountService.isClientOwnsAccount(clientId, accountId)) return;
         this.kafkaTemplate.send("card-create-topic",
                 new CardCreateRequest(
                         clientId,
                         email,
-                        cardCreateRequest.accountId(),
-                        cardCreateRequest.type(),
-                        cardCreateRequest.type().getDefaultCardName()));
+                        accountId,
+                        type,
+                        type.getDefaultCardName()));
     }
 
     @Async
-    public void renameCard(String email, CardRenameRequest cardRenameRequest){
+    public void renameCard(String email, Long accountId, CardRenameRequest cardRenameRequest){
         var clientId = this.securityUtil.getClientId(email);
-        if (!this.accountService.isClientOwnsAccount(clientId, cardRenameRequest.accountId())
-                || !this.cardRepository.isCardBelongToAccount(cardRenameRequest.cardId(), cardRenameRequest.accountId())) return;
+        if (!this.accountService.isClientOwnsAccount(clientId, accountId)
+                || !this.cardRepository.isCardBelongToAccount(cardRenameRequest.cardId(), accountId)) return;
         this.kafkaTemplate.send("card-rename-topic", new org.d3javu.backend.kafka.requests.card.CardRenameRequest(
                 this.securityUtil.getClientId(email),
                 email,
-                cardRenameRequest.accountId(),
+                accountId,
                 cardRenameRequest.cardId(),
                 cardRenameRequest.newName()
         ));

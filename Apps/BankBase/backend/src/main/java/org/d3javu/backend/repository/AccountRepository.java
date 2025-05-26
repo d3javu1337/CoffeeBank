@@ -12,15 +12,6 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    @Query(value = "select a.id as id, " +
-            "a.account_name as accountName, " +
-            "a.deposit as accountDeposit, " +
-            "a.type as accountType " +
-            "from account a " +
-            "where a.client_id= :id",
-            nativeQuery = true)
-    List<CompactAccountReadDto> findAllAccountsByClientId(Long id);
-
     @Transactional
     @Query(value = "insert into " +
             "account(account_name, deposit, client_id, type) " +
@@ -34,12 +25,16 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             "a.deposit as accountDeposit, " +
             "a.type as accountType " +
             "from account a " +
-            "where a.id= :accountId and a.client_id= :clientId",
+            "where a.client_id= :clientId",
             nativeQuery = true)
-    Optional<CompactAccountReadDto> findAccountById(Long accountId, Long clientId);
+    Optional<CompactAccountReadDto> findAccount(Long clientId);
 
     @Query(value = "select count(*) > 0 from account a where a.id= :accountId and a.client_id= :clientId",
             nativeQuery = true)
     Boolean isClientOwnsAccount(Long clientId, Long accountId);
+
+    @Query(value = "select a.id from account a where a.client_id= :clientId",
+            nativeQuery = true)
+    Long findAccountIdByClientId(Long clientId);
 
 }

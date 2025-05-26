@@ -21,17 +21,11 @@ public class AccountController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<?> getAccount(@RequestParam(value = "accountId", required = false) Long accountId) {
-        if(accountId == null) {
-            return ResponseEntity.ok(this.accountService.getAccounts());
-        }
-
-        var t = this.accountService.getAccount(accountId, this.securityUtil.getClientId());
+    public ResponseEntity<?> getAccount() {
+        var t = this.accountService.getAccount(this.securityUtil.getClientId());
 
         if(t.isEmpty()){
-            log.warn("requested account id={} which does not belongs to userId={}", accountId,
-                    this.securityUtil.getClientId());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("unable to do this");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Client does not have account");
         }
 
         return ResponseEntity.ok(t.get());
@@ -46,7 +40,10 @@ public class AccountController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping
     public void renameAccount(@RequestBody AccountRenameRequest accountRenameRequest) {
-        this.accountService.renameAccount(this.securityUtil.getClientEmail(), accountRenameRequest.id(), accountRenameRequest.newName());
+        this.accountService.renameAccount(
+                this.securityUtil.getClientEmail(),
+                this.securityUtil.getClientAccountId(),
+                accountRenameRequest.newName());
     }
 
 //    @DeleteMapping("/{id}")

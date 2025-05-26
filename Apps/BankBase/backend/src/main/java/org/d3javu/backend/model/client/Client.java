@@ -47,8 +47,10 @@ public class Client {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @OneToMany(mappedBy = "linkedClient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Account> accounts;
+//    @OneToMany(mappedBy = "linkedClient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    private List<Account> accounts;
+    @OneToOne(mappedBy = "linkedClient")
+    private Account accounts;
 
     @Column(name = "is_enabled", nullable = false)
     private boolean isEnabled = true;
@@ -65,7 +67,7 @@ public class Client {
         this.documents = documents;
         this.email = email;
         this.passwordHash = passwordHash;
-        this.accounts = accounts;
-        this.accounts.getFirst().setLinkedClient(this);
+//        this.accounts = accounts;
+//        this.accounts.getFirst().setLinkedClient(this);
     }
 }

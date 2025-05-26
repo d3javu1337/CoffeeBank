@@ -22,29 +22,23 @@ public class CardController {
     private final SecurityUtil securityUtil;
 
     @GetMapping
-    public ResponseEntity<?> getCard(@RequestParam("accountId") Long accountId, @RequestParam(value = "cardId", required = false) Long cardId) {
-        if(accountId == null && cardId == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
-        if(cardId == null) return ResponseEntity.ok(this.cardService.getCardsByAccountId(accountId));
-        var card = this.cardService.getCardById(accountId, cardId);
+    public ResponseEntity<?> getCard(@RequestParam(value = "cardId", required = false) Long cardId) {
+        if(cardId == null) return ResponseEntity.ok(this.cardService.getCardsByAccountId(this.securityUtil.getClientAccountId()));
+        var card = this.cardService.getCardById(cardId);
         if (card == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("unable to so this");
         return ResponseEntity.ok(card);
     }
 
-//    @GetMapping(params = {"AccountIdRequest"})
-//    public ResponseEntity<?> getCards(@RequestBody AccountIdRequest accountId) {
-//        return ResponseEntity.ok(this.cardService.getCardsByAccountId(accountId.accountId()));
-//    }
-
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping
     public void createCard(@RequestBody CardCreateRequest request) {
-        this.cardService.createCard(this.securityUtil.getClientEmail(), request);
+        this.cardService.createCard(this.securityUtil.getClientEmail(), this.securityUtil.getClientAccountId(), request.type());
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping
     public void updateCardName(@RequestBody CardRenameRequest request) {
-        this.cardService.renameCard(this.securityUtil.getClientEmail(), request);
+        this.cardService.renameCard(this.securityUtil.getClientEmail(), this.securityUtil.getClientAccountId(), request);
     }
 
 //    @DeleteMapping
