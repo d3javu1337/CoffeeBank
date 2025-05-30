@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "account")
+@Table(name = "personal_account")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,7 +21,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "account_name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String accountName = "Персональный счёт";
 
     @Column(name = "deposit", nullable = false, scale = 2)

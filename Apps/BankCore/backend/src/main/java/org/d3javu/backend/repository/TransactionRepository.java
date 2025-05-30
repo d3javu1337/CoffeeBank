@@ -9,24 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
     @Query(value = """
-                    insert into transaction(from_id, to_id, money, type, is_completed, commited_at)  values
-                    (:senderAccountId, :recipientAccountId, :money, :transactionType, :isCompleted, now()) returning id
+                    insert into transaction(id, sender_id, recipient_id, amount, type, is_completed, commited_at)  values
+                    (gen_random_uuid(), :senderAccountId, :recipientAccountId, :money, :transactionType, :isCompleted, now()) returning id
                     """,
             nativeQuery = true)
-    Long createTransaction(Long senderAccountId, Long recipientAccountId, Double money, TransactionType transactionType, Boolean isCompleted);
+    UUID createTransaction(Long senderAccountId, Long recipientAccountId, Double money, TransactionType transactionType, Boolean isCompleted);
 
     @Modifying
-    @Query(value = "update account set deposit = deposit - :money where id = :senderAccountId",
+    @Query(value = "update personal_account set deposit = deposit - :amount where id = :senderAccountId",
             nativeQuery = true)
-    Integer takeMoneyFromSender(Long senderAccountId, Double money);
+    Integer takeMoneyFromSender(Long senderAccountId, Double amount);
 
     @Modifying
-    @Query(value = "update account set deposit = deposit + :money where id = :recipientAccountId",
+    @Query(value = "update personal_account set deposit = deposit + :amount where id = :recipientAccountId",
             nativeQuery = true)
-    Integer sendMoneyToRecipient(Long recipientAccountId, Double money);
+    Integer sendMoneyToRecipient(Long recipientAccountId, Double amount);
 
 }

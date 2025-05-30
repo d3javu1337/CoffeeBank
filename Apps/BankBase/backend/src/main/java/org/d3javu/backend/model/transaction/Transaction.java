@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.d3javu.backend.model.account.Account;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "transaction")
@@ -16,25 +17,19 @@ import java.time.LocalDateTime;
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "from_id")
-    private Account from;
-
-    @Column(name = "from_name")
-    private String fromName;
+    @JoinColumn(name = "sender_id")
+    private Account sender;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "to_id", nullable = false)
-    private Account to;
+    @JoinColumn(name = "recipient_id", nullable = false)
+    private Account recipient;
 
-    @Column(name = "to_name")
-    private String toName;
-
-    @Column(name = "money", nullable = false, scale = 2)
-    private Double money;
+    @Column(name = "amount", nullable = false, scale = 2)
+    private Double amount;
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -46,10 +41,10 @@ public class Transaction {
     @Column(name = "commited_at", nullable = false)
     private LocalDateTime commitedAt;
 
-    public Transaction(Account from, Account to, Double money, TransactionType type) {
-        this.from = from;
-        this.to = to;
-        this.money = money;
+    public Transaction(Account sender, Account recipient, Double amount, TransactionType type) {
+        this.sender = sender;
+        this.recipient = recipient;
+        this.amount = amount;
         this.type = type;
     }
 }

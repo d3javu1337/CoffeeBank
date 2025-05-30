@@ -4,8 +4,8 @@ create table client(
     name varchar(50) not null,
     patronymic varchar(50) not null,
     date_of_birth date not null,
-    email varchar(255) not null,
-    phone_number varchar(30) not null,
+    email varchar(255) unique not null,
+    phone_number varchar(30) unique not null,
     password_hash varchar(255) not null,
     is_enabled boolean not null default true
 );
@@ -35,21 +35,20 @@ create table documents(
     itn varchar(12) unique
 );
 
-create table account(
+create table personal_account(
     id bigserial primary key,
-    account_name varchar(50) not null default 'Cчёт',
-    deposit float(2) default 0,
-    client_id bigint not null,
-    type varchar(10) not null
+    name varchar(50) not null,
+    deposit float(2) default 0 not null,
+    client_id bigint references client(id) not null,
+    type varchar(10) not null,
+    unique(client_id, type)
 );
 
 create table transaction(
-    id bigserial primary key,
-    from_id bigint references account(id),
-    from_name varchar(255) not null,
-    to_id bigint references account(id),
-    to_name varchar(255) not null,
-    money float(2) not null,
+    id uuid primary key,
+    sender_id bigint references personal_account(id) not null ,
+    recipient_id bigint references personal_account(id),
+    amount float(2) not null,
     type varchar(50) not null,
     is_completed boolean not null,
     commited_at timestamp without time zone not null
@@ -58,7 +57,9 @@ create table transaction(
 create table business_client(
     id bigserial primary key,
     official_name varchar(255) not null,
-    name varchar(255) not null
+    brand varchar(255) not null,
+    email varchar(255) unique not null,
+    password_hash varchar(255) not null
 );
 
 create table contact_person(
@@ -71,13 +72,36 @@ create table contact_person(
     business_client_id bigint references business_client(id)
 );
 
+create table payment_account(
+    id bigserial primary key,
+    name varchar(50) not null,
+    deposit float(2) default 0 not null ,
+    business_client_id bigint references business_client(id) not null,
+    type varchar(50) not null,
+    unique(business_client_id, type)
+);
+
 create table card(
     id bigserial primary key,
     name varchar(50) not null,
     type varchar(50) not null,
     number varchar(16) not null,
     expiration_date date not null,
-    account_id bigint references account(id),
+    account_id bigint references personal_account(id),
     pin_hash varchar(255) not null,
     security_code varchar(3) not null
+);
+
+
+create table payment(
+    id uuid primary key,
+    payment_account_id bigint references payment_account(id) not null,
+    personal_account_id bigint references personal_account(id) not null,
+    transaction_id uuid references transaction(id) not null
+);
+
+create table invoice(
+    id uuid primary key,
+    amount float(2) not null,
+    provider_payment_account_id bigint references payment_account(id) not null
 );

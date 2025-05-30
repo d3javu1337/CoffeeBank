@@ -2,7 +2,7 @@ package org.d3javu.backend.kafka.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.d3javu.backend.services.BaseClientService;
+import org.d3javu.backend.services.base.BaseClientService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;

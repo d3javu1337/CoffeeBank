@@ -4,7 +4,7 @@ package org.d3javu.backend.grpc;
 
 message TransferByPhoneNumberRequest {
   string recipientPhoneNumber = 1;
-  int64 senderId = 2;
+  int64 senderAccountId = 2;
   double money = 3;
 }
 
@@ -12,6 +12,33 @@ message TransferByPhoneNumberResponse {
   bool isCompleted = 1;
 }
 
+message InvoicePaymentRequest {
+  int64 payerAccountId = 1;
+  string invoiceUUID = 2;
+}
+
+message InvoicePaymentResponse{
+  bool isCompleted = 1;
+}
+
+message InvoiceIssueRequest{
+  int64 providerPaymentAccountId = 1;
+  double amount = 2;
+}
+
+message InvoiceIssueResponse{
+  string paymentLink = 1;
+}
+
 service TransactionService {
   rpc TransferByPhoneNumber(TransferByPhoneNumberRequest) returns (TransferByPhoneNumberResponse) {}
+}
+
+service PaymentService {
+  rpc InvoicePayment(InvoicePaymentRequest) returns (InvoicePaymentResponse) {}
+
+}
+
+service InvoiceService {
+  rpc InvoiceIssue(InvoiceIssueRequest) returns (InvoiceIssueResponse){}
 }

@@ -2,9 +2,6 @@ package org.d3javu.backend;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.d3javu.backend.services.AccountService;
-import org.d3javu.backend.services.CardService;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
