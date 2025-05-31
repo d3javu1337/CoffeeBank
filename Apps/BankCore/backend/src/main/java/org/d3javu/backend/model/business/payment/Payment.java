@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.d3javu.backend.model.base.personalaccount.PersonalAccount;
+import org.d3javu.backend.model.business.invoice.Invoice;
 import org.d3javu.backend.model.business.paymentaccount.PaymentAccount;
 import org.d3javu.backend.model.transaction.Transaction;
 
@@ -32,5 +33,9 @@ public class Payment {
     @OneToOne
     @JoinColumn(name = "transaction_id")
     private Transaction transactionId;
+
+    @OneToOne
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
 
 }

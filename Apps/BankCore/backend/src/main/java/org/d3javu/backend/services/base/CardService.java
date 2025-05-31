@@ -16,12 +16,12 @@ import java.time.LocalDate;
 public class CardService {
 
     private final CoreSecurityUtilService coreSecurityUtilService;
-    private final AccountService accountService;
+    private final PersonalAccountService personalAccountService;
     private final CardRepository cardRepository;
 
 
     public void createCard(CardCreateRequest cardCreateRequest) {
-        if(!this.accountService.checkOwning(
+        if(!this.personalAccountService.checkOwning(
                 cardCreateRequest.accountId(),
                 cardCreateRequest.clientId(),
                 cardCreateRequest.email()
@@ -45,7 +45,7 @@ public class CardService {
     }
 
     public void renameCard(CardRenameRequest cardRenameRequest) {
-        if(!this.accountService.checkOwning(
+        if(!this.personalAccountService.checkOwning(
                 cardRenameRequest.accountId(),
                 cardRenameRequest.clientId(),
                 cardRenameRequest.email()

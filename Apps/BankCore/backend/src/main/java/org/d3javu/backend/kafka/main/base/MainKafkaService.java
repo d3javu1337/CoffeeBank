@@ -7,7 +7,7 @@ import org.d3javu.backend.kafka.main.base.personalaccount.PersonalAccountRenameR
 import org.d3javu.backend.kafka.main.base.card.CardCreateRequest;
 import org.d3javu.backend.kafka.main.base.card.CardRenameRequest;
 import org.d3javu.backend.kafka.main.base.client.BaseClientRegistrationRequest;
-import org.d3javu.backend.services.base.AccountService;
+import org.d3javu.backend.services.base.PersonalAccountService;
 import org.d3javu.backend.services.base.CardService;
 import org.d3javu.backend.services.base.BaseClientService;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MainKafkaService {
 
-    private final AccountService accountService;
+    private final PersonalAccountService personalAccountService;
     private final CardService cardService;
     private final BaseClientService baseClientService;
 
@@ -26,14 +26,14 @@ public class MainKafkaService {
             properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.base.personalaccount.PersonalAccountCreateRequest"},
             groupId = "main-core-consumers")
     public void createAccountHandler(PersonalAccountCreateRequest personalAccountCreateRequest) {
-        this.accountService.createAccount(personalAccountCreateRequest);
+        this.personalAccountService.createAccount(personalAccountCreateRequest);
     }
 
     @KafkaListener(topics = "account-rename-topic", containerFactory = "mainKafkaListenerContainerFactory",
             properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.base.personalaccount.PersonalAccountRenameRequest"},
             groupId = "main-core-consumers")
     public void renameAccountHandler(PersonalAccountRenameRequest personalAccountRenameRequest) {
-        this.accountService.renameAccount(personalAccountRenameRequest);
+        this.personalAccountService.renameAccount(personalAccountRenameRequest);
     }
 
     @KafkaListener(topics = "card-create-topic", containerFactory = "mainKafkaListenerContainerFactory",
@@ -50,16 +50,11 @@ public class MainKafkaService {
         this.cardService.renameCard(cardRenameRequest);
     }
 
-    //hope it will match types by itself. If not -> should do some thoughts
     @KafkaListener(topics = "client-registration-topic", containerFactory = "mainKafkaListenerContainerFactory",
             properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.base.client.BaseClientRegistrationRequest"},
             groupId = "main-core-consumers")
     public void baseClientRegistrationHandler(BaseClientRegistrationRequest baseClientRegistrationRequest) {
         this.baseClientService.registration(baseClientRegistrationRequest);
     }
-
-//    @KafkaListener(topics = "client-registration-topic", containerFactory = "mainKafkaListenerContainerFactory",
-//            properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.client.BusinessClientRegistrationRequest"}, groupId = "main-core-consumers")
-//    public void businessClientRegistrationHandler(){}
 
 }

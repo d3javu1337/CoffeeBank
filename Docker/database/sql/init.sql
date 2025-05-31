@@ -76,9 +76,7 @@ create table payment_account(
     id bigserial primary key,
     name varchar(50) not null,
     deposit float(2) default 0 not null ,
-    business_client_id bigint references business_client(id) not null,
-    type varchar(50) not null,
-    unique(business_client_id, type)
+    business_client_id bigint references business_client(id) not null unique ,
 );
 
 create table card(
@@ -93,15 +91,16 @@ create table card(
 );
 
 
-create table payment(
-    id uuid primary key,
-    payment_account_id bigint references payment_account(id) not null,
-    personal_account_id bigint references personal_account(id) not null,
-    transaction_id uuid references transaction(id) not null
-);
-
 create table invoice(
     id uuid primary key,
     amount float(2) not null,
     provider_payment_account_id bigint references payment_account(id) not null
+);
+
+create table payment(
+    id uuid primary key,
+    payment_account_id bigint references payment_account(id) not null,
+    personal_account_id bigint references personal_account(id) not null,
+    transaction_id uuid references transaction(id) not null,
+    invoice_id uuid references invoice(id) not null unique
 );

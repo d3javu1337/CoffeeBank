@@ -5,10 +5,11 @@ import org.d3javu.backend.model.base.personalaccount.AccountType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
-public interface AccountRepository extends JpaRepository<PersonalAccount, Long> {
+public interface PersonalAccountRepository extends JpaRepository<PersonalAccount, Long> {
 
 
     @Query(value = "select count(*) > 0 from personal_account a " +
@@ -18,13 +19,13 @@ public interface AccountRepository extends JpaRepository<PersonalAccount, Long> 
     Boolean checkOwning(Long accountId, Long clientId, String clientEmail);
 
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @Modifying
-    @Query(value = "update personal_account set account_name= :newName where id= :accountId",
+    @Query(value = "update personal_account set name= :newName where id= :accountId",
             nativeQuery = true)
     void renameAccount(Long accountId, String newName);
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @Query(value = "insert into personal_account(client_id, type, name) values (:clientId, :accountType, :name) returning id",
             nativeQuery = true)
     Long createAccount(Long clientId, AccountType accountType, String name);
