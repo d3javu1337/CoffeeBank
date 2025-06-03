@@ -42,16 +42,4 @@ public class Card {
     @Column(name = "security_code", nullable = false, updatable = false, length = 3)
     private String securityCode;
 
-
-//    public Card(ECardType cardType, String pinCode, PersonalAccount acc){
-//        this.cardName = cardType.getDefaultCardName();
-//        this.cardType = cardType;
-//        this.cardNumber = new CardNumber(acc).getNumber();
-//        this.expirationDate = Date.valueOf(LocalDate.now().plusYears(10));
-//        this.linkedPersonalAccount = acc;
-//        this.pinCodeHash = pinCode.matches("\\d{4}") ? Security.getHash(pinCode) : null;
-//        this.code = Security.cvvGenerator(this.expirationDate);
-//
-//    }
-
 }

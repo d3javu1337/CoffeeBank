@@ -26,16 +26,16 @@ public class TransactionService extends TransactionServiceGrpc.TransactionServic
         var recipientAccountId = this.personalAccountService.getAccountIdByClientId(this.baseClientService.getClientIdByPhoneNumber(request.getRecipientPhoneNumber())
                 .orElseThrow(() -> new IllegalArgumentException("No client with phone number " + request.getRecipientPhoneNumber())));
         var senderAccountId = request.getSenderAccountId();
-        if (!this.personalAccountService.hasEnoughMoney(senderAccountId, request.getMoney())) {
-            this.transactionRepository.createTransaction(senderAccountId, recipientAccountId, request.getMoney(),
+        if (!this.personalAccountService.hasEnoughMoney(senderAccountId, request.getAmount())) {
+            this.transactionRepository.createTransaction(senderAccountId, recipientAccountId, request.getAmount(),
                     TransactionType.TRANSFER.name(), false);
             responseObserver.onNext(TransferByPhoneNumberResponse.newBuilder().setIsCompleted(false).build());
             responseObserver.onCompleted();
             return;
         }
-        this.transactionRepository.takeMoneyFromSender(senderAccountId, request.getMoney());
-        this.transactionRepository.sendMoneyToRecipient(recipientAccountId, request.getMoney());
-        this.transactionRepository.createTransaction(senderAccountId, recipientAccountId, request.getMoney(),
+        this.transactionRepository.takeMoneyFromSender(senderAccountId, request.getAmount());
+        this.transactionRepository.sendMoneyToRecipient(recipientAccountId, request.getAmount());
+        this.transactionRepository.createTransaction(senderAccountId, recipientAccountId, request.getAmount(),
                 TransactionType.TRANSFER.name(), true);
         responseObserver.onNext(TransferByPhoneNumberResponse.newBuilder().setIsCompleted(true).build());
         responseObserver.onCompleted();

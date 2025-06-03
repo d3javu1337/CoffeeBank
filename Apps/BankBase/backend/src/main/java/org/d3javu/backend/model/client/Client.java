@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.d3javu.backend.model.account.Account;
-import org.d3javu.backend.model.client.clientDocuments.Documents;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "client")
@@ -36,38 +34,16 @@ public class Client {
     @Column(name = "phone_number", nullable = false, length = 30)
     private String phoneNumber;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "client")
-//    @JoinColumn(name = "documents_id", nullable = false)
-    @JoinColumn(name = "documents_id", nullable = true)
-    private Documents documents;
-
     @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-//    @OneToMany(mappedBy = "linkedClient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    private List<Account> accounts;
     @OneToOne(mappedBy = "linkedClient")
-    private Account accounts;
+    private Account account;
 
     @Column(name = "is_enabled", nullable = false)
-    private boolean isEnabled = true;
+    private Boolean isEnabled = true;
 
-
-    public Client(String surname, String name, String patronymic, LocalDate dateOfBirth,
-                  String phoneNumber, Documents documents, String email, String passwordHash,
-                  List<Account> accounts) {
-        this.surname = surname;
-        this.name = name;
-        this.patronymic = patronymic;
-        this.dateOfBirth = dateOfBirth;
-        this.phoneNumber = phoneNumber;
-        this.documents = documents;
-        this.email = email;
-        this.passwordHash = passwordHash;
-//        this.accounts = accounts;
-//        this.accounts.getFirst().setLinkedClient(this);
-    }
 }

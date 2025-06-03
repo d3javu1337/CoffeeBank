@@ -14,14 +14,14 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Transactional
     @Query(value = "insert into " +
-            "personal_account(account_name, deposit, client_id, type) " +
+            "personal_account(name, deposit, client_id, type) " +
             "values('Счёт', 0.0, :clientId, 'PERSONAL') " +
             "returning id",
             nativeQuery = true)
     Long createAccount(Long clientId);
 
     @Query(value = "select a.id as id, " +
-            "a.account_name as accountName, " +
+            "a.name as accountName, " +
             "a.deposit as accountDeposit, " +
             "a.type as accountType " +
             "from personal_account a " +

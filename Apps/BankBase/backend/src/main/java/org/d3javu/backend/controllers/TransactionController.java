@@ -2,7 +2,7 @@ package org.d3javu.backend.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.d3javu.backend.dto.requests.transaction.PaymentNumberRequest;
+import org.d3javu.backend.dto.requests.transaction.InvoiceNumberRequest;
 import org.d3javu.backend.dto.requests.transaction.TransferByPhoneNumberRequest;
 import org.d3javu.backend.service.TransactionService;
 import org.d3javu.backend.utils.SecurityUtil;
@@ -22,22 +22,26 @@ public class TransactionController {
     private final TransactionService transactionService;
     private final SecurityUtil securityUtil;
 
-    @PostMapping
+    @PostMapping("/transfer")
     public ResponseEntity<?> transferByPhoneNumber(@RequestBody TransferByPhoneNumberRequest request) {
         if (request == null || request.phoneNumber() == null || !request.phoneNumber().matches("\\+7\\d{10}")) {
             return new ResponseEntity<>("request==null || phoneNumber==null || phoneNumber !matches as phone number",
                     HttpStatus.BAD_REQUEST);
         }
-        if (request.money() <=0 ) return new ResponseEntity<>("money<=0", HttpStatus.BAD_REQUEST);
-        if(this.transactionService.transferByPhoneNumber(request.phoneNumber(),
-                this.securityUtil.getClientId(), request.money())){
+        if (request.money() <= 0) return new ResponseEntity<>("money<=0", HttpStatus.BAD_REQUEST);
+        if (this.transactionService.transferByPhoneNumber(request.phoneNumber(),
+                this.securityUtil.getClientAccountId(), request.money())) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<?> paymentInvoiceByNumber(@RequestBody PaymentNumberRequest request) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("resource is building rn");
+    @PostMapping("/purchase")
+    public ResponseEntity<?> InvoicePaymentByNumber(@RequestBody InvoiceNumberRequest request) {
+        if (request == null || request.invoiceNumber() == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (this.transactionService.purchase(request.invoiceNumber().toString(), this.securityUtil.getClientAccountId())) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
 }

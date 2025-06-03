@@ -46,7 +46,4 @@ public class AccountController {
                 accountRenameRequest.newName());
     }
 
-//    @DeleteMapping("/{id}")
-//    public void closeAccount(@PathVariable Long id) {    }
-
 }

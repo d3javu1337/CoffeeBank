@@ -20,7 +20,7 @@ public class Documents {
 
     @OneToOne(fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn
-//    @Column(name = "client_id")
+    @JoinColumn(name = "client_id")
     private Client client;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

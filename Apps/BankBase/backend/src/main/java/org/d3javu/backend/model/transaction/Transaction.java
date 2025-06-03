@@ -41,10 +41,4 @@ public class Transaction {
     @Column(name = "commited_at", nullable = false)
     private LocalDateTime commitedAt;
 
-    public Transaction(Account sender, Account recipient, Double amount, TransactionType type) {
-        this.sender = sender;
-        this.recipient = recipient;
-        this.amount = amount;
-        this.type = type;
-    }
 }

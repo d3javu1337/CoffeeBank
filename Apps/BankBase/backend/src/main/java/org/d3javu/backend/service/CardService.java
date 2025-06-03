@@ -3,8 +3,6 @@ package org.d3javu.backend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.d3javu.backend.dto.card.CompactCardReadDto;
-import org.d3javu.backend.dto.requests.account.AccountIdRequest;
-import org.d3javu.backend.dto.requests.card.AccountIdAndCardIdRequest;
 import org.d3javu.backend.dto.requests.card.CardRenameRequest;
 import org.d3javu.backend.kafka.requests.card.CardCreateRequest;
 import org.d3javu.backend.model.card.CardType;
@@ -39,7 +37,7 @@ public class CardService {
     }
 
     @Async
-    public void createCard(String email, Long accountId, CardType type){
+    public void openCard(String email, Long accountId, CardType type){
         var clientId = this.securityUtil.getClientId(email);
         if(!this.accountService.isClientOwnsAccount(clientId, accountId)) return;
         this.kafkaTemplate.send("card-create-topic",

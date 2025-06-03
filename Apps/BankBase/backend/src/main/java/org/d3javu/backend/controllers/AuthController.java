@@ -38,7 +38,6 @@ public class AuthController {
     private final ClientService clientService;
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;
-    private final ClientSessionsService clientSessionsService;
 
     @Value("${jwt.refresh.lifetime}")
     private Duration refreshLifetime;

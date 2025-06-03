@@ -22,17 +22,14 @@ public class Account {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 50)
-    private String accountName = "Персональный счёт";
+    private String name = "Персональный счёт";
 
     @Column(name = "deposit", nullable = false, scale = 2)
-    private Double accountDeposit = 0d;
+    private Double deposit = 0d;
 
     @OneToMany(mappedBy = "linkedAccount", cascade = CascadeType.ALL)
     private List<Card> linkedCards = new ArrayList<>();
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "client_id")
-//    private Client linkedClient;
     @OneToOne
     @JoinColumn(name = "client_id")
     private Client linkedClient;
@@ -41,16 +38,4 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountType accountType = AccountType.PERSONAL;
 
-//    public Account() {
-//        this.accountName = "Персональный счёт";
-//        this.accountDeposit = 0d;
-//        this.accountType = AccountType.PERSONAL;
-//    }
-
-    public Account(Client client) {
-        this.accountName = "Персональный счёт";
-        this.accountDeposit = 0d;
-        this.linkedClient = client;
-//        this.accountType = AccountType.PERSONAL;
-    }
 }
