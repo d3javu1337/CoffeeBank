@@ -2,7 +2,6 @@ package org.d3javu.backend.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.d3javu.backend.dto.requests.account.AccountIdRequest;
 import org.d3javu.backend.dto.requests.account.AccountRenameRequest;
 import org.d3javu.backend.service.AccountService;
 import org.d3javu.backend.utils.SecurityUtil;
@@ -24,11 +23,7 @@ public class AccountController {
     public ResponseEntity<?> getAccount() {
         var t = this.accountService.getAccount(this.securityUtil.getClientId());
 
-        if(t.isEmpty()){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Client does not have account");
-        }
-
-        return ResponseEntity.ok(t.get());
+        return ResponseEntity.ok(t.orElse(null));
     }
 
     @ResponseStatus(HttpStatus.CREATED)

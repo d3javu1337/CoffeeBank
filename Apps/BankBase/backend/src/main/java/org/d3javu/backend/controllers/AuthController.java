@@ -47,9 +47,12 @@ public class AuthController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> createClient(@RequestBody ClientCreateRecord clientCreateRecord) {
-        if (!this.clientService.registration(clientCreateRecord)){
+        if (!this.clientService.registration(clientCreateRecord))
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Registration failed. This email is already registered");
-        }
+
+        if(!clientCreateRecord.phoneNumber().matches("[0-9]{10}"))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Registration failed. Invalid phone number");
+
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 

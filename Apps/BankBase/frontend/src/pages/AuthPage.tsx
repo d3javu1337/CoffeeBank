@@ -1,10 +1,19 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import RegistrationForm from "../component/RegistrationForm";
 import {observer} from "mobx-react-lite";
 import LoginForm from "../component/LoginForm";
+import {Context} from "../index";
+import {useNavigate} from "react-router-dom";
 
 const AuthPage: FC = () => {
     const [isLoginPage, setIsLoginPage] = useState(true);
+    const{store} = useContext(Context);
+
+    const nav = useNavigate();
+
+    useEffect(() => {
+        if(store.isAuth) nav('/main')
+    }, []);
 
     if (!isLoginPage) {
         return (

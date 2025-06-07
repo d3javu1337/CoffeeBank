@@ -33,9 +33,6 @@ public class AccountService {
     public void createAccount(String email) {
         this.kafkaTemplate.send(
                 "account-create-topic",
-                0,
-                Instant.now().toEpochMilli(),
-                "test",
                 new AccountCreateRequest(this.clientService.getClientIdByEmail(email), email));
     }
 

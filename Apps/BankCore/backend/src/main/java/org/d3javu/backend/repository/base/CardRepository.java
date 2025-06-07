@@ -18,10 +18,10 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             "values (:name, :type, :number, :expirationDate, :accountId, :securityCode) " +
             "returning id",
             nativeQuery = true)
-    Long initCard(String name, CardType type, String number, LocalDate expirationDate, Long accountId, String securityCode);
+    Long initCard(String name, String type, String number, LocalDate expirationDate, Long accountId, String securityCode);
 
     @Modifying
-    @Query(value = "update card set number= :cardNumber where id= :cardId",
+    @Query(value = "update card set number= :number where id= :cardId",
             nativeQuery = true)
     void updateCardAfterInit(Long cardId, String number);
 

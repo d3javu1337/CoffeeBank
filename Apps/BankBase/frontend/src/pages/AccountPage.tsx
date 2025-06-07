@@ -1,25 +1,36 @@
-import React, {FC, useContext, useEffect} from 'react';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import {Context} from "../index";
-import {useLocation} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import AccountService from "../service/AccountService";
 import CardService from "../service/CardService";
 import {observer} from "mobx-react-lite";
+import {CardType} from "../dto/model/card/CardType";
 
 const AccountPage: FC = () => {
 
     const {store, clientStore, accountStore, cardStore} = useContext(Context);
-    const path = useLocation();
-    const from = path.pathname;
-    const accountId = Number.parseInt(from?.split('/')[2]);
+
+    const [newCardType, setNewCardType] = useState<CardType>();
 
 
     useEffect(() => {
 
-        CardService.getCards(accountId)
+        CardService.getCards()
             .then(res => {
                 store.setIsLoading(true)
                 try {
-                    cardStore.setCards(res.data);
+                    cardStore.setCards(res.data || {});
+                } catch (e) {
+                    console.error(e)
+                } finally {
+                    store.setIsLoading(false)
+                }
+            });
+        AccountService.getAccount()
+            .then(res => {
+                store.setIsLoading(true)
+                try {
+                    accountStore.setAccount(res.data || {})
                 } catch (e) {
                     console.error(e)
                 } finally {
@@ -27,21 +38,38 @@ const AccountPage: FC = () => {
                 }
             })
 
-    }, [store, clientStore, accountStore]);
+    }, [store, clientStore, accountStore, cardStore]);
 
     return (
-        <div>
-            <p>{accountId}</p>
-            {Array.isArray(cardStore.Cards) && cardStore.Cards.map(card =>
-                <a href={from+'/card/'+card.id} key={card.id}>
-                    <div className="card" style={{border: '1px solid black'}}>
-                        <p>{card.name}</p>
-                        <p>{card.type}</p>
-                        <p>{card.number}</p>
+            <div>
+                <div>
+                    {accountStore.Account.id}
+                </div>
+                {cardStore.cards.length > 0 &&
+                <div>
+                    {Array.isArray(cardStore.Cards) && cardStore.Cards.map(card =>
+                        <a href={'/account/card/' + card.id} key={card.id}>
+                            <div className="card" style={{border: '1px solid black'}}>
+                                <p>{card.name}</p>
+                                <p>{card.type}</p>
+                                <p>{card.number}</p>
+                            </div>
+                        </a>
+                    )}
+                </div>
+                }
+                {cardStore.cards.length === 0 &&
+                    <div>
+                        <p>you does not have any cards. Wanna create some?</p>
+                        <input type={'submit'} value={'create'} onClick={() => CardService.createCard(newCardType || CardType.debit)}/>
                     </div>
-                </a>
-            )}
-        </div>
+                }
+                <div style={{border: '1px solid black'}}>
+                    <NavLink to={'/transaction/transfer'}>
+                        <button>transfer</button>
+                    </NavLink>
+                </div>
+            </div>
     );
 };
 

@@ -6,13 +6,8 @@ import AccountRename from "../dto/requests/account/AccountRenameRequest";
 
 
 export default class AccountService {
-    static async getAccounts(): Promise<AxiosResponse<Array<AccountCompact>>> {
-        return api.get<Array<AccountCompact>>('/account')
-    }
-
-    static async getAccount(id: number): Promise<AxiosResponse<AccountCompact>> {
-        const data = new AccountIdRequest(id)
-        return api.get<AccountCompact>('/account', { data : { data }})
+    static async getAccount(): Promise<AxiosResponse<AccountCompact>> {
+        return api.get<AccountCompact>('/account')
     }
 
     static async createAccount(): Promise<AxiosResponse<void>> {

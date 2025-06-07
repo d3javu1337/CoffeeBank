@@ -1,6 +1,7 @@
 import React, {FC, useContext} from 'react';
 import {Context} from "../index";
 import {NavLink, useNavigate} from "react-router-dom";
+import {observer} from "mobx-react-lite";
 
 const Header: FC = () => {
     const {store} = useContext(Context);
@@ -22,4 +23,4 @@ const Header: FC = () => {
     }
 };
 
-export default Header;
+export default observer(Header);

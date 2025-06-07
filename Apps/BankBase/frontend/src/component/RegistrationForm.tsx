@@ -35,9 +35,9 @@ const RegistrationForm: FC = () => {
             <input
                 onChange={(e) => setDateOfBirth(e.target.value)}
                 value={dateOfBirth} type="date" required />
-            <input
+            +7<input
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                value={phoneNumber} type="tel" placeholder="+78228133752" minLength={10} maxLength={10} required />
+                value={phoneNumber} type="tel" placeholder="8228133752" minLength={10} maxLength={10} required />
             <input
                 onChange={(e) => setEmail(e.target.value)}
                 value={email} type="email" placeholder="email@email.ru" required />

@@ -6,15 +6,14 @@ export default class AccountStore{
 
     constructor() {makeAutoObservable(this)}
 
-    accounts = {} as AccountCompact[]
+    account = {} as AccountCompact
 
-    setAccounts(accounts: AccountCompact[]){
-        this.accounts = accounts;
+    setAccount(account: AccountCompact){
+        this.account = account;
     }
 
-    get Accounts(): AccountCompact[]{
-        console.log(this.accounts);
-        return this.accounts;
+    get Account(): AccountCompact{
+        return this.account;
     }
 
 

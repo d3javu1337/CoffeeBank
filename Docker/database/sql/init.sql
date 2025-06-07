@@ -86,7 +86,7 @@ create table card(
     number varchar(16) not null,
     expiration_date date not null,
     account_id bigint references personal_account(id),
-    pin_hash varchar(255) not null,
+    pin_hash varchar(255),
     security_code varchar(3) not null
 );
 

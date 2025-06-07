@@ -9,18 +9,16 @@ import CardRenameRequest from "../dto/requests/card/CardRenameRequest";
 
 
 export default class CardService {
-    static async getCards(accountId: number): Promise<AxiosResponse<Array<CardCompact>>> {
-        const data = new CardRequest(accountId, null);
-        return api.get<CardCompact[]>('/card', { params : { accountId: accountId, cardId: null } });
+    static async getCards(): Promise<AxiosResponse<Array<CardCompact>>> {
+        return api.get<CardCompact[]>('/card');
     }
 
-    static async getCard(accountId: number, cardId: number): Promise<AxiosResponse<CardCompact>> {
-        const data = new CardRequest(accountId, cardId)
-        return api.get<CardCompact>('/card', {data : { data }})
+    static async getCard(cardId: number): Promise<AxiosResponse<CardCompact>> {
+        return api.get<CardCompact>('/card', { params : { cardId: cardId } })
     }
 
-    static async createCard(accountId: number, type: CardType): Promise<AxiosResponse<void>> {
-        const data = new CardCreateRequest(accountId, type);
+    static async createCard(type: CardType): Promise<AxiosResponse<void>> {
+        const data = new CardCreateRequest(type);
         return api.post<void>('/card', data);
     }
 

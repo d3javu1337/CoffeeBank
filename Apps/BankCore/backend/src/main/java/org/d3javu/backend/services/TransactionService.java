@@ -6,10 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.d3javu.backend.grpc.*;
 import org.d3javu.backend.model.transaction.TransactionType;
 import org.d3javu.backend.repository.TransactionRepository;
+import org.d3javu.backend.repository.business.PaymentRepository;
 import org.d3javu.backend.services.base.PersonalAccountService;
 import org.d3javu.backend.services.base.BaseClientService;
+import org.d3javu.backend.services.business.InvoiceService;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @GrpcService
@@ -18,6 +22,9 @@ public class TransactionService extends TransactionServiceGrpc.TransactionServic
     private final TransactionRepository transactionRepository;
     private final BaseClientService baseClientService;
     private final PersonalAccountService personalAccountService;
+    private final InvoiceService invoiceService;
+    private final PaymentRepository paymentRepository;
+
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Override
@@ -40,5 +47,34 @@ public class TransactionService extends TransactionServiceGrpc.TransactionServic
         responseObserver.onNext(TransferByPhoneNumberResponse.newBuilder().setIsCompleted(true).build());
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void invoicePayment(InvoicePaymentRequest request, StreamObserver<InvoicePaymentResponse> responseObserver) {
+        if (!this.invoiceService.existsInvoice(request.getInvoiceUUID())){
+            responseObserver.onNext(InvoicePaymentResponse.newBuilder().setIsCompleted(false).build());
+            responseObserver.onCompleted();
+            return;
+        }
+        var invoiceAmount = this.invoiceService.getInvoiceAmount(request.getInvoiceUUID());
+        if(!this.personalAccountService.hasEnoughMoney(request.getPayerAccountId(), invoiceAmount)){
+            this.transactionRepository.createTransaction(request.getPayerAccountId(), null, invoiceAmount,
+                    TransactionType.PURCHASE.name(), false);
+            responseObserver.onNext(InvoicePaymentResponse.newBuilder().setIsCompleted(false).build());
+            responseObserver.onCompleted();
+            return;
+        }
+        var providerAccountId = this.invoiceService.getRecipientPaymentAccountId(request.getInvoiceUUID());
+        this.paymentRepository.takeMoneyFromPayer(request.getPayerAccountId(), invoiceAmount);
+        this.paymentRepository.sendMoneyToRecipient(
+                providerAccountId,
+                invoiceAmount);
+        var transactionId = this.transactionRepository.createTransaction(request.getPayerAccountId(),
+                null, invoiceAmount, TransactionType.PURCHASE.name(), true);
+        this.paymentRepository.createPayment(providerAccountId, request.getPayerAccountId(),
+                transactionId, UUID.fromString(request.getInvoiceUUID()));
+        responseObserver.onNext(InvoicePaymentResponse.newBuilder().setIsCompleted(true).build());
+        responseObserver.onCompleted();
+    }
+
 
 }

@@ -28,7 +28,7 @@ public interface PersonalAccountRepository extends JpaRepository<PersonalAccount
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Query(value = "insert into personal_account(client_id, type, name) values (:clientId, :accountType, :name) returning id",
             nativeQuery = true)
-    Long createAccount(Long clientId, AccountType accountType, String name);
+    Long createAccount(Long clientId, String accountType, String name);
 
     @Query(value = "select a.id from personal_account a where a.client_id= :clientId limit 1",
             nativeQuery = true)

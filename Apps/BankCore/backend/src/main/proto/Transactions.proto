@@ -32,11 +32,7 @@ message InvoiceIssueResponse{
 
 service TransactionService {
   rpc TransferByPhoneNumber(TransferByPhoneNumberRequest) returns (TransferByPhoneNumberResponse) {}
-}
-
-service PaymentService {
   rpc InvoicePayment(InvoicePaymentRequest) returns (InvoicePaymentResponse) {}
-
 }
 
 service InvoiceService {

@@ -23,7 +23,7 @@ public class CardController {
     public ResponseEntity<?> getCard(@RequestParam(value = "cardId", required = false) Long cardId) {
         if(cardId == null) return ResponseEntity.ok(this.cardService.getCardsByAccountId(this.securityUtil.getClientAccountId()));
         var card = this.cardService.getCardById(cardId);
-        if (card == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("unable to so this");
+        if (card == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("unable to do this");
         return ResponseEntity.ok(card);
     }
 

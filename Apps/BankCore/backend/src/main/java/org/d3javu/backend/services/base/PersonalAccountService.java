@@ -18,8 +18,8 @@ public class PersonalAccountService {
     public void createAccount(PersonalAccountCreateRequest personalAccountCreateRequest) {
         var id = this.personalAccountRepository.createAccount(
                 personalAccountCreateRequest.id(),
-                AccountType.PERSONAL,
-                AccountType.PERSONAL.name()
+                AccountType.PERSONAL.name(),
+                AccountType.PERSONAL.name
         );
         log.info("Created account {}", id);
     }

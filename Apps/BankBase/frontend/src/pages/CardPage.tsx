@@ -1,6 +1,7 @@
 import React, {FC, useContext} from 'react';
 import {Context} from "../index";
 import {useLocation} from "react-router-dom";
+import {observer} from "mobx-react-lite";
 
 const CardPage: FC = () => {
     const {store, clientStore, accountStore, cardStore} = useContext(Context);
@@ -16,4 +17,4 @@ const CardPage: FC = () => {
     );
 };
 
-export default CardPage;
+export default observer(CardPage);

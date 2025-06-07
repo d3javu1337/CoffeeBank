@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class MainKafkaService {
+public class BusinessMainKafkaService {
 
     private final BusinessClientService businessClientService;
     private final PaymentAccountService paymentAccountService;

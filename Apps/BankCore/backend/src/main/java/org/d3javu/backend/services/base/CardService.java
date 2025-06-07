@@ -29,7 +29,7 @@ public class CardService {
         else{
             var id = this.cardRepository.initCard(
                     cardCreateRequest.name(),
-                    cardCreateRequest.type(),
+                    cardCreateRequest.type().name(),
                     "-1",
                     LocalDate.now().plusYears(10),
                     cardCreateRequest.accountId(),
@@ -40,6 +40,7 @@ public class CardService {
                     id,
                     cardCreateRequest.type()
             );
+            log.info("Card number generated: {}", cardNumber);
             this.cardRepository.updateCardAfterInit(id, cardNumber);
         }
     }

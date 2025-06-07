@@ -7,23 +7,13 @@ import {api_url} from "../http";
 export default class Store {
 
 
-    // client = {} as ClientCompact
-    // isAuth = false
-    isAuth = true
+    isAuth = localStorage.getItem('token') !== null
     isLoading = false
 
     constructor() { makeAutoObservable(this) }
 
-    // setClient(client: ClientCompact) {
-    //     this.client = client
-    // }
-
-    // get Client(): ClientCompact {
-    //     return this.client;
-    // }
-
     setIsAuth(isAuth: boolean) {
-        this.isAuth = isAuth
+        this.isAuth = localStorage.getItem('token') !== null;
     }
 
     setIsLoading(isLoading: boolean) {
@@ -34,7 +24,6 @@ export default class Store {
         this.setIsLoading(true)
         try {
             const response = await AuthService.login(email, password);
-            console.log(response.data);
             localStorage.setItem('token', response.data)
             this.setIsAuth(true)
         } catch (e) {
@@ -50,7 +39,6 @@ export default class Store {
         try {
             const response =
                 await AuthService.registration(surname, name, patronymic, new Date(dateOfBirth), phoneNumber, email, password)
-            console.log(response.data);
             if(response.status === HttpStatusCode.Accepted) {
                 await this.login(email, password);
             }
@@ -65,7 +53,6 @@ export default class Store {
         this.setIsLoading(true)
         try {
             const response = await axios.get<string>(`${api_url}/auth/refresh`, {withCredentials: true});
-            console.log(response.data);
             localStorage.setItem('token', response.data)
             this.setIsAuth(true)
         } catch (e) {
