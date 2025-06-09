@@ -6,33 +6,29 @@ using backend.repository;
 
 namespace backend.service;
 
-public class BusinessClientService
+public class BusinessClientService(
+    BusinessClientRepository repository,
+    KafkaProducer producer,
+    SecurityService securityService)
 {
-    private readonly BusinessClientRepository _repository;
-    private readonly KafkaProducer _producer;
-    private readonly SecurityService _securityService;
-
-    public BusinessClientService(BusinessClientRepository repository, KafkaProducer producer,
-        SecurityService securityService)
+    public BusinessClient GetByEmail(string email)
     {
-        _repository = repository;
-        _producer = producer;
-        _securityService = securityService;
-    }
-
-    public BusinessClient GetById(long id)
-    {
-        return _repository.Find(id).Result;
+        return repository.Find(email).Result;
     }
 
     public async Task Registration(BusinessClientCreateDto dto)
     {
-        _producer.produce("business-client-registration-topic",
+        await producer.produce("business_client_registration_topic",
                 new BusinessClientCreateRequest(
                     dto.OfficialName,
                     dto.Brand,
                     dto.Email,
-                    _securityService.HashPassword(dto.Password))
+                    securityService.HashPassword(dto.Password))
             );
+    }
+
+    public long GetIdByEmail(string email)
+    {
+        return repository.FindIdByEmail(email).Result;
     }
 }

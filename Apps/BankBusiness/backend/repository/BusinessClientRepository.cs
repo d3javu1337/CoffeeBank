@@ -4,22 +4,20 @@ using Microsoft.EntityFrameworkCore;
 namespace backend.repository;
 
 
-public class BusinessClientRepository(DatabaseContext context)
+public class BusinessClientRepository(DatabaseContext _context)
 {
-    private readonly DatabaseContext context = context;
-
-    public async Task Create(BusinessClient businessClient)
+    public async Task<BusinessClient> Find(string email)
     {
-        await context.BusinessClients.AddAsync(businessClient);
+        return await _context.BusinessClients.FromSql($"select * from business_client where email={email}").FirstAsync();
     }
 
-    public async Task<BusinessClient> Find(long id)
+    public async Task<BusinessClient?> FindByEmail(string email)
     {
-        return await context.BusinessClients.FindAsync(id);
-    }    
-    
-    public async Task<BusinessClient> FindByEmail(string email)
+        return await _context.BusinessClients.FromSql($"select * from business_client b where b.email={email}").FirstAsync();
+    }
+
+    public async Task<long> FindIdByEmail(string email)
     {
-        return await context.BusinessClients.FromSql($"select * from business_client b where b.email={email}").FirstAsync();
+        return (await _context.BusinessClients.FromSql($"select b.id from business_client b where b.email={email}").FirstAsync()).Id;
     }
 }

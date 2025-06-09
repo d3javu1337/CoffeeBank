@@ -21,7 +21,7 @@ public class AuthService
 
     public TokensDto? login(LoginDto dto)
     {
-        BusinessClient client = _businessClientRepository.FindByEmail(dto.email).Result;
+        BusinessClient? client = _businessClientRepository.FindByEmail(dto.email).Result;
         if (client != null && _securityService.VerifyPassword(dto.password, client.PasswordHash))
         {
             return new TokensDto(
@@ -30,5 +30,15 @@ public class AuthService
             );
         }
         return null;
+    }
+
+    public TokensDto? refresh(string refreshToken)
+    {
+        var email = _jwtService.ExtractEmail(refreshToken);
+        if (email == null) return null;
+        return new TokensDto(
+            _jwtService.GenerateAccessToken(email),
+            _jwtService.GenerateRefreshToken(email)
+        );
     }
 }

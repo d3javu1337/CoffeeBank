@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace backend.http;
 
 public static class InvoiceEndpoints
@@ -17,4 +19,6 @@ public static class InvoiceEndpoints
 
         });
     }
+    
+    public static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
 }

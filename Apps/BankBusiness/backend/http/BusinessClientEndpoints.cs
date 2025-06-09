@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using backend.repository;
 using backend.service;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,10 @@ public static class BusinessClientEndpoints
      */
     public static void MapBusinessClientEndpoints(this WebApplication app)
     {
-        app.MapGet("/client", ([FromServices]BusinessClientService service, [FromQuery]long id) =>
-        {
-            return service.GetById(id);
-        });
+        app.MapGet("/client", ([FromServices]BusinessClientService service, ClaimsPrincipal user) => 
+            service.GetByEmail(GetEmail(user)))
+        .RequireAuthorization();
     }
+    
+    public static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
 }

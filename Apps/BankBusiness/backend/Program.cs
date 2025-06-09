@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using backend;
 using backend.http;
@@ -10,19 +11,26 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton(new JwtService(
-    builder.Configuration.GetSection("JWTSecret:Key").Value
-));
 
+//repos start
 builder.Services.AddScoped<BusinessClientRepository>();
+builder.Services.AddScoped<PaymentAccountRepository>();
+builder.Services.AddScoped<PaymentRepository>();
+//repos end
+
 builder.Services.AddHttpContextAccessor();
+
+//service start
 builder.Services.AddTransient<BusinessClientService>();
 builder.Services.AddTransient<AuthService>();
 builder.Services.AddTransient<InvoiceService>();
-// builder.Services.AddTransient<JwtService>();
 builder.Services.AddTransient<PaymentService>();
 builder.Services.AddTransient<PaymentAccountService>();
 builder.Services.AddTransient<SecurityService>();
+builder.Services.AddSingleton(new JwtService(
+    builder.Configuration.GetSection("JWTSecret:Key").Value
+));
+//service end
 
 // builder.Services.AddProducer(builder.Configuration.GetSection("Kafka:BootstrapServers"));
 builder.Services.AddSingleton(_ => new KafkaProducer(
@@ -30,17 +38,38 @@ builder.Services.AddSingleton(_ => new KafkaProducer(
 ));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(x => x.TokenValidationParameters = new TokenValidationParameters()
+    .AddJwtBearer(x =>
         {
-            IssuerSigningKey =
-                new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JWTSecret:Key").Value)),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
+            x.SaveToken = true;
+            x.TokenValidationParameters = new TokenValidationParameters()
+            {
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JWTSecret:Key").Value)),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+            x.Events = new JwtBearerEvents()
+            {
+                OnTokenValidated = async context =>
+                {
+                    var claimsPrincipal = context.Principal;
+                    var email = claimsPrincipal.FindFirstValue(ClaimTypes.Email);
+
+                    var claimIdentity = context.Principal.Identity as ClaimsIdentity;
+                    claimIdentity.AddClaim(new Claim(ClaimTypes.Email, email));
+                }
+            };
         }
     );
+        
 
+builder.Services.AddAuthorization(opts =>
+{
+    opts.AddPolicy("", t => t.RequireAuthenticatedUser());
+});
 
 var connection = builder.Configuration.GetConnectionString("Postgres");
 
@@ -56,6 +85,7 @@ app.MapPaymentEndpoints();
 app.MapContactPersonEndpoints();
 
 app.UseAuthentication();
+app.UseAuthorization();
 // app.UseCors(cors => cors
         // .AllowAnyOrigin()
         // .AllowAnyMethod()

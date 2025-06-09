@@ -1,9 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using backend.dto.Auth;
 using backend.dto.BusinessClient;
 using backend.service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 
 namespace backend.http;
@@ -33,6 +36,7 @@ public static class AuthEndpoints
                 {
                     return Results.BadRequest();
                 }
+
                 var tokens = service.login(dto);
                 {
                     if (tokens != null)
@@ -40,13 +44,23 @@ public static class AuthEndpoints
                         SetRefreshTokenCookie(ref res, tokens.RefreshToken);
                         return Results.Ok(tokens.AccessToken);
                     }
+
                     return Results.Unauthorized();
                 }
             });
-        app.MapPost("auth/refersh",
-            ([FromServices] BusinessClientService service, [FromBody] JwtRequest dto) =>
+        app.MapGet("auth/refresh",
+            ([FromServices] AuthService service, HttpRequest req, HttpResponse res) =>
             {
-                return Results.Forbid();
+                var refreshToken = req.Cookies["refreshToken"];
+
+                if (refreshToken == null) return Results.Unauthorized();
+
+                var tokens = service.refresh(refreshToken);
+                
+                if(tokens == null) return Results.Unauthorized();
+
+                SetRefreshTokenCookie(ref res, tokens.RefreshToken);
+                return Results.Ok(tokens.AccessToken);
             });
     }
 
@@ -59,8 +73,8 @@ public static class AuthEndpoints
             {
                 HttpOnly = true,
                 Expires = DateTimeOffset.UtcNow.AddDays(30),
-                Path = "***/***"
+                Path = "/"
             }
-            );
+        );
     }
 }

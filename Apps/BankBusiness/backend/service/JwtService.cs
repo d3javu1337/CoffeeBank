@@ -44,4 +44,19 @@ public class JwtService
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public string? ExtractEmail(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        return tokenHandler.ValidateToken(token, new TokenValidationParameters()
+            {
+                IssuerSigningKey = _secret,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true
+            },
+            out SecurityToken validatedToken
+        ).FindFirst(ClaimTypes.Email)?.Value;
+    }
+
 }

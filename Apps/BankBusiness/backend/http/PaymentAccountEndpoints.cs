@@ -1,3 +1,7 @@
+using System.Security.Claims;
+using backend.service;
+using Microsoft.AspNetCore.Mvc;
+
 namespace backend.http;
 
 public static class PaymentAccountEndpoints
@@ -8,7 +12,12 @@ public static class PaymentAccountEndpoints
      */
     public static void MapPaymentAccountEndpoints(this WebApplication app)
     {
-        app.MapPost("/account", () => { });
-        app.MapGet("/account", () => { });
+        app.MapPost("/account", (ClaimsPrincipal user, [FromServices] PaymentAccountService service) =>
+        {
+            service.Create(GetEmail(user));
+            return Results.Accepted();
+        });
+        app.MapGet("/account", (ClaimsPrincipal user, [FromServices] PaymentAccountService service) => service.Find(GetEmail(user)));
     }
+    public static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
 }
