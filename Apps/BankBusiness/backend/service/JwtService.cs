@@ -8,40 +8,40 @@ namespace backend.service;
 public class JwtService
 {
 
-    private readonly SymmetricSecurityKey _accessSecret;
-    private readonly SymmetricSecurityKey _refreshSecret;
+    private readonly SymmetricSecurityKey _secret;
 
-    public JwtService(string accessSecret, string refreshSecret)
+    public JwtService(string secret)
     {
-        _accessSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessSecret));
-        _refreshSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(refreshSecret));
+        _secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
     }
 
     public string GenerateAccessToken(string email)
     {
         var issuedDate = DateTime.UtcNow;
         var expiredDate = issuedDate.AddMinutes(15);
-        return new JwtSecurityToken(
+        var token = new JwtSecurityToken(
             issuer: null,
             audience: null,
             claims: [new Claim(ClaimTypes.Email, email)],
             notBefore: issuedDate,
             expires: expiredDate,
-            signingCredentials: new SigningCredentials(_accessSecret, SecurityAlgorithms.HmacSha256)
-        ).ToString();
+            signingCredentials: new SigningCredentials(_secret, SecurityAlgorithms.HmacSha256)
+        );
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
     
     public string GenerateRefreshToken(string email)
     {
         var issuedDate = DateTime.UtcNow;
         var expiredDate = issuedDate.AddDays(30);
-        return new JwtSecurityToken(
+        var token =  new JwtSecurityToken(
             issuer: null,
             audience: null,
             claims: [new Claim(ClaimTypes.Email, email)],
             notBefore: issuedDate,
             expires: expiredDate,
-            signingCredentials: new SigningCredentials(_refreshSecret, SecurityAlgorithms.HmacSha256)
-        ).ToString();
+            signingCredentials: new SigningCredentials(_secret, SecurityAlgorithms.HmacSha256)
+        );
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
