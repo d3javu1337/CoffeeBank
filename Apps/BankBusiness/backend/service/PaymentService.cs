@@ -1,3 +1,4 @@
+using backend.dto.payment;
 using backend.model;
 using backend.repository;
 
@@ -10,7 +11,7 @@ public class PaymentService(PaymentRepository repository)
         return repository.Find(paymentId).Result;
     }
 
-    public List<Payment> GetAllByPaymentAccount(long paymentAccountId)
+    public List<PaymentWithAmountDto> GetAllByPaymentAccount(long paymentAccountId)
     {
         return repository.FindAllByPaymentAccount(paymentAccountId).Result;
     }

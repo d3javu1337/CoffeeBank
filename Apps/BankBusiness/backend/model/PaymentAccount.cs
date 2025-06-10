@@ -17,4 +17,7 @@ public class PaymentAccount
     
     [ForeignKey("business_client_id")]
     public BusinessClient LinkedClient {get; set;}
+    
+    [Column("invoice_create_token")]
+    public Guid? InvoiceCreateToken {get; set;}
 }

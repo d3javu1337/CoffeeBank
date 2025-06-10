@@ -16,17 +16,21 @@ public static class PaymentEndpoints
             ClaimsPrincipal user,
             [FromServices] PaymentService paymentService,
             [FromServices] PaymentAccountService paymentAccountService,
-            [FromQuery] Guid paymentId) =>
+            [FromQuery] Guid? paymentId) =>
         {
-            if (paymentId == Guid.Empty)
+            if (paymentId == null)
             {
-                return Results.Ok(paymentService.GetAllByPaymentAccount(paymentAccountService.Find(GetEmail(user)).Id));
+                long? id = paymentAccountService.Find(GetEmail(user))?.Id;
+                if (id == null) return Results.Ok();
+                return Results.Ok(paymentService.GetAllByPaymentAccount(id.Value));
             }
 
-            return Results.Ok(paymentService.GetPayment(paymentId));
-        });
+            return Results.Ok(paymentService.GetPayment(paymentId.Value));
+        })
+            .RequireAuthorization();
         app.MapGet("/payment/check", ([FromServices] PaymentService paymentService, [FromQuery] Guid invoiceId) =>
-            Results.Ok(paymentService.CheckPayment(invoiceId)));
+            Results.Ok(paymentService.CheckPayment(invoiceId)))
+            .RequireAuthorization();
     }
 
     public static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;

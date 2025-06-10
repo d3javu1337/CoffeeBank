@@ -76,7 +76,8 @@ create table payment_account(
     id bigserial primary key,
     name varchar(50) not null,
     deposit float(2) default 0 not null ,
-    business_client_id bigint references business_client(id) not null unique ,
+    business_client_id bigint references business_client(id) not null unique,
+    invoice_create_token uuid unique
 );
 
 create table card(

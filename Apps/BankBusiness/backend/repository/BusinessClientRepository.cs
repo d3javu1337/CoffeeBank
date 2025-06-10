@@ -18,6 +18,6 @@ public class BusinessClientRepository(DatabaseContext _context)
 
     public async Task<long> FindIdByEmail(string email)
     {
-        return (await _context.BusinessClients.FromSql($"select b.id from business_client b where b.email={email}").FirstAsync()).Id;
+        return (await _context.BusinessClients.FromSql($"select * from business_client b where b.email={email}").FirstAsync()).Id;
     }
 }

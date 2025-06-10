@@ -10,17 +10,17 @@ public class PaymentAccountService(
     PaymentAccountRepository paymentAccountRepository,
     KafkaProducer kafkaProducer)
 {
-    public PaymentAccount Find(string email)
+    public PaymentAccount? Find(string clientEmail)
     {
-        return paymentAccountRepository.Find(businessClientService.GetIdByEmail(email)).Result;
+        return paymentAccountRepository.Find(businessClientService.GetIdByEmail(clientEmail)).Result;
     }
 
-    public async Task Create(string email)
+    public async Task Create(string clientEmail)
     {
         await kafkaProducer.produce("payment_account_create_topic",
             new PaymentAccountCreateRequest(
-                businessClientService.GetIdByEmail(email),
-                email
+                businessClientService.GetIdByEmail(clientEmail),
+                clientEmail
             ));
     }
 }

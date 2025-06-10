@@ -2,10 +2,9 @@ package org.d3javu.backend.services.business;
 
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
-import org.d3javu.backend.grpc.InvoiceIssueRequest;
-import org.d3javu.backend.grpc.InvoiceIssueResponse;
-import org.d3javu.backend.grpc.InvoiceServiceGrpc;
+import org.d3javu.backend.grpc.*;
 import org.d3javu.backend.repository.business.InvoiceRepository;
+import org.d3javu.backend.repository.business.PaymentAccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -15,6 +14,8 @@ import java.util.UUID;
 public class InvoiceService extends InvoiceServiceGrpc.InvoiceServiceImplBase {
 
     private final InvoiceRepository invoiceRepository;
+
+    private final PaymentAccountRepository paymentAccountRepository;
 
     public Boolean existsInvoice(String invoiceIdString) {
         return invoiceRepository.existsById(UUID.fromString(invoiceIdString));
@@ -37,8 +38,18 @@ public class InvoiceService extends InvoiceServiceGrpc.InvoiceServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void invoiceIssuingTokenCreate(InvoiceIssuingTokenCreateRequest request, StreamObserver<InvoiceIssuingTokenCreateResponse> responseObserver) {
+        var token = UUID.randomUUID();
+        this.paymentAccountRepository.createInvoiceIssuingToken(request.getPaymentAccountId(), token);
+        responseObserver.onNext(InvoiceIssuingTokenCreateResponse.newBuilder()
+                .setToken(token.toString())
+                .build());
+        responseObserver.onCompleted();
+    }
+
     private String generateInvoicePaymentLink(UUID invoiceId) {
-        return String.format("http://localhost:8080/transaction/invoice?id=%s", invoiceId.toString());
+        return String.format("/transaction/invoice?id=%s", invoiceId.toString());
     }
 
 }

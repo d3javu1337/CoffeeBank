@@ -1,0 +1,24 @@
+syntax="proto3";
+package org.d3javu.backend.grpc;
+
+message InvoiceIssueRequest{
+  int64 providerPaymentAccountId = 1;
+  double amount = 2;
+}
+
+message InvoiceIssueResponse{
+  string paymentLink = 1;
+}
+
+message InvoiceIssuingTokenCreateRequest{
+  int64 paymentAccountId = 1;
+}
+
+message InvoiceIssuingTokenCreateResponse{
+  string token = 1;
+}
+
+service InvoiceService {
+  rpc InvoiceIssue(InvoiceIssueRequest) returns (InvoiceIssueResponse) {}
+  rpc InvoiceIssuingTokenCreate(InvoiceIssuingTokenCreateRequest) returns (InvoiceIssuingTokenCreateResponse) {}
+}

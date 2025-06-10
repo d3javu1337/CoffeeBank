@@ -5,9 +5,11 @@ using backend.http;
 using backend.kafka;
 using backend.repository;
 using backend.service;
+using Grpc.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using InvoiceService = Org.D3Javu.Backend.Grpc.InvoiceService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +25,14 @@ builder.Services.AddHttpContextAccessor();
 //service start
 builder.Services.AddTransient<BusinessClientService>();
 builder.Services.AddTransient<AuthService>();
-builder.Services.AddTransient<InvoiceService>();
+builder.Services.AddTransient<backend.service.InvoiceService>();
 builder.Services.AddTransient<PaymentService>();
 builder.Services.AddTransient<PaymentAccountService>();
 builder.Services.AddTransient<SecurityService>();
+builder.Services.AddTransient<backend.service.InvoiceService>();
+builder.Services.AddSingleton<UtilService>(_ => new UtilService(
+    builder.Configuration.GetSection("Front:Host").Value
+));
 builder.Services.AddSingleton(new JwtService(
     builder.Configuration.GetSection("JWTSecret:Key").Value
 ));
@@ -64,12 +70,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             };
         }
     );
-        
 
-builder.Services.AddAuthorization(opts =>
-{
-    opts.AddPolicy("", t => t.RequireAuthenticatedUser());
-});
+
+builder.Services.AddGrpc();
+// wrong client
+builder.Services.AddGrpcClient<Org.D3Javu.Backend.Grpc.InvoiceService.InvoiceServiceClient>(opt =>
+        {
+            opt.Address = new Uri(builder.Configuration.GetSection("Grpc:ServerHost").Value);
+        }
+    ).ConfigureChannel(c => c.Credentials = ChannelCredentials.Insecure)
+    ;
+
+builder.Services.AddAuthorization(opts => { opts.AddPolicy("", t => t.RequireAuthenticatedUser()); });
 
 var connection = builder.Configuration.GetConnectionString("Postgres");
 
@@ -87,9 +99,9 @@ app.MapContactPersonEndpoints();
 app.UseAuthentication();
 app.UseAuthorization();
 // app.UseCors(cors => cors
-        // .AllowAnyOrigin()
-        // .AllowAnyMethod()
-        // .AllowAnyHeader());
+// .AllowAnyOrigin()
+// .AllowAnyMethod()
+// .AllowAnyHeader());
 
 // app.UseHttpsRedirection();
 

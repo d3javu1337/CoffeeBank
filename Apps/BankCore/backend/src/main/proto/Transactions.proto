@@ -30,11 +30,20 @@ message InvoiceIssueResponse{
   string paymentLink = 1;
 }
 
+message InvoiceIssuingTokenCreateRequest{
+  int64 paymentAccountId = 1;
+}
+
+message InvoiceIssuingTokenCreateResponse{
+  string token = 1;
+}
+
 service TransactionService {
   rpc TransferByPhoneNumber(TransferByPhoneNumberRequest) returns (TransferByPhoneNumberResponse) {}
   rpc InvoicePayment(InvoicePaymentRequest) returns (InvoicePaymentResponse) {}
 }
 
 service InvoiceService {
-  rpc InvoiceIssue(InvoiceIssueRequest) returns (InvoiceIssueResponse){}
+  rpc InvoiceIssue(InvoiceIssueRequest) returns (InvoiceIssueResponse) {}
+  rpc InvoiceIssuingTokenCreate(InvoiceIssuingTokenCreateRequest) returns (InvoiceIssuingTokenCreateResponse) {}
 }
