@@ -8,7 +8,7 @@ networks:
     driver: bridge
 
 services:
-  service:
+  backend:
     build:
       context: '../../../CoffeeBank/Apps/BankCore/backend'
       dockerfile: Dockerfile
@@ -16,5 +16,14 @@ services:
 #      - '127.0.0.1:8080:8082'
     environment:
       SPRING_DATASOURCE_URL: 'jdbc:postgresql://database:5432/CoffeeBank'
+    networks:
+      - appNetwork
+
+  frontend:
+    build:
+      context: '../../../CoffeeBank/Apps/BankCore/frontend'
+      dockerfile: Dockerfile
+    ports:
+      - '127.0.0.1:3000:3000'
     networks:
       - appNetwork

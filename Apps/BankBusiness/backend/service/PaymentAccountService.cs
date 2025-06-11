@@ -23,4 +23,11 @@ public class PaymentAccountService(
                 clientEmail
             ));
     }
+
+    public bool isTokenValid(string clientEmail, Guid token)
+    {
+        var id = Find(clientEmail)?.Id;
+        if(id == null) return false;
+        return paymentAccountRepository.isTokenValid(id.Value, token).Result;
+    }
 }

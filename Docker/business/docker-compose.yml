@@ -1,0 +1,19 @@
+version: '3.9'
+
+name:
+  bankBusinessCluster
+
+networks:
+  appNetwork:
+    external: true
+    driver: bridge
+
+services:
+  service:
+    build:
+      context: '../../../CoffeeBank/Apps/BankBusiness/backend'
+      dockerfile: Dockerfile
+    ports:
+      - '127.0.0.1:5225:5225'
+    networks:
+      - appNetwork

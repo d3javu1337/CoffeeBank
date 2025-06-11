@@ -21,6 +21,7 @@ public class BusinessMainKafkaService {
             properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.business.client.BusinessClientRegistrationRequest"},
             groupId = "main-core-consumers")
     public void businessClientRegistrationHandler(BusinessClientRegistrationRequest request) {
+        System.out.println(request.officialName());
         this.businessClientService.registration(request);
     }
 

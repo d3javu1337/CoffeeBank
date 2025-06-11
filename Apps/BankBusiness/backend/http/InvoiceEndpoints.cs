@@ -15,18 +15,19 @@ public static class InvoiceEndpoints
     public static void MapInvoiceEndpoints(this WebApplication app)
     {
         app.MapPost("/api/token",
-                ([FromServices] service.InvoiceService invoiceService, ClaimsPrincipal user) =>
+                ([FromServices] InvoiceService invoiceService, ClaimsPrincipal user) =>
                 {
                     return Results.Ok(invoiceService.GenerateApiToken(GetEmail(user)));
                 })
             .RequireAuthorization();
-        app.MapGet("/api/token", ([FromServices] service.InvoiceService invoiceService, ClaimsPrincipal user) =>
+        app.MapGet("/api/token", ([FromServices] InvoiceService invoiceService, ClaimsPrincipal user) =>
             invoiceService.GetInvoiceCreateToken(GetEmail(user)))
             .RequireAuthorization();
         app.MapPost("/invoice",
-                ([FromServices] service.InvoiceService invoiceService, ClaimsPrincipal user,
-                    [FromBody] requests.InvoiceIssueRequest dto) =>
+                ([FromServices] InvoiceService invoiceService, [FromServices] PaymentAccountService paymentAccountService, ClaimsPrincipal user,
+                    [FromBody] InvoiceIssueRequest dto) =>
                 {
+                    if(!paymentAccountService.isTokenValid(GetEmail(user), dto.token)) return Results.BadRequest();
                     return Results.Ok(invoiceService.InvoiceIssue(GetEmail(user), new InvoiceIssueDto(dto.amount)));
                 })
             .RequireAuthorization();

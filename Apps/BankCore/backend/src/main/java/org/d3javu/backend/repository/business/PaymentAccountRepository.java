@@ -14,7 +14,7 @@ public interface PaymentAccountRepository extends JpaRepository<PaymentAccount, 
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Query(value = "insert into payment_account(name, deposit, business_client_id) " +
-            "values('Расчётный счёт', 0.0, :businessClientId)",
+            "values('Расчётный счёт', 0.0, :businessClientId) returning id",
             nativeQuery = true)
     Long createPaymentAccount(Long businessClientId);
 

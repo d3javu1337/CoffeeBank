@@ -1,3 +1,3 @@
 namespace backend.kafka.requests;
 
-public record BusinessClientCreateRequest(string OfficialName, string Brand, string Email, string PasswordHash);
+public record BusinessClientCreateRequest(string officialName, string brand, string email, string passwordHash);

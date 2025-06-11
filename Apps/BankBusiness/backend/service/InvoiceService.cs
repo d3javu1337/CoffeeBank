@@ -6,7 +6,6 @@ namespace backend.service;
 
 public class InvoiceService
 {
-    private readonly GrpcChannel _channel = GrpcChannel.ForAddress("https://localhost:9090");
     private readonly Org.D3Javu.Backend.Grpc.InvoiceService.InvoiceServiceClient _grpcClient;
     private readonly PaymentAccountService _paymentAccountService;
     private readonly UtilService _utilService;

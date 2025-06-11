@@ -21,7 +21,7 @@ builder.Services.AddScoped<PaymentRepository>();
 //repos end
 
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddCors();
 //service start
 builder.Services.AddTransient<BusinessClientService>();
 builder.Services.AddTransient<AuthService>();
@@ -98,11 +98,12 @@ app.MapContactPersonEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();
-// app.UseCors(cors => cors
-// .AllowAnyOrigin()
-// .AllowAnyMethod()
-// .AllowAnyHeader());
-
-// app.UseHttpsRedirection();
+app.UseCors(opts =>
+    opts
+        .WithOrigins("localhost:3001")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+    );
 
 app.Run();

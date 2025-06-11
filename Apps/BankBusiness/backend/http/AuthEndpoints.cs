@@ -28,7 +28,7 @@ public static class AuthEndpoints
             {
                 service.Registration(dto);
                 return Results.Accepted();
-            });
+            }).AllowAnonymous();
         app.MapPost("/auth/login",
             ([FromServices] AuthService service, [FromBody] LoginDto dto, HttpRequest req, HttpResponse res) =>
             {
@@ -47,7 +47,7 @@ public static class AuthEndpoints
 
                     return Results.Unauthorized();
                 }
-            });
+            }).AllowAnonymous();
         app.MapGet("auth/refresh",
             ([FromServices] AuthService service, HttpRequest req, HttpResponse res) =>
             {
