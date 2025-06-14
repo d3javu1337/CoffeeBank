@@ -4,11 +4,12 @@ using backend.repository;
 
 namespace backend.service;
 
-public class PaymentService(PaymentRepository repository)
+public class PaymentService(PaymentRepository repository, PaymentAccountService paymentAccountService)
 {
-    public Payment GetPayment(Guid paymentId)
+    public Payment? GetPayment(string businessClientEmail, Guid paymentId)
     {
-        return repository.Find(paymentId).Result;
+        var payment =  repository.Find(paymentId).Result;
+        return payment.ProviderPaymentAccount.Id != paymentAccountService.Find(businessClientEmail)!.Id ? null : payment;
     }
 
     public List<PaymentWithAmountDto> GetAllByPaymentAccount(long paymentAccountId)

@@ -13,12 +13,6 @@ namespace backend.http;
 
 public static class AuthEndpoints
 {
-    /*
-     * 1. registration
-     * 2. login
-     * 3. token refresh
-     */
-
     private static readonly Regex emailRegex = new(@"^\S+@{1}[a-z]*\.{1}[a-z]+$");
 
     public static void MapAuthEndpoints(this WebApplication app)
@@ -32,36 +26,25 @@ public static class AuthEndpoints
         app.MapPost("/auth/login",
             ([FromServices] AuthService service, [FromBody] LoginDto dto, HttpRequest req, HttpResponse res) =>
             {
-                if (dto.email == null || dto.password == null || !emailRegex.IsMatch(dto.email))
-                {
+                if (dto.Email == null || dto.Password == null || !emailRegex.IsMatch(dto.Email))
                     return Results.BadRequest();
-                }
 
                 var tokens = service.login(dto);
-                {
-                    if (tokens != null)
-                    {
-                        SetRefreshTokenCookie(ref res, tokens.RefreshToken);
-                        return Results.Ok(tokens.AccessToken);
-                    }
+                if (tokens == null) return Results.Unauthorized();
+                SetRefreshTokenCookie(ref res, tokens.RefreshToken);
+                return Results.Ok(tokens.AccessToken);
 
-                    return Results.Unauthorized();
-                }
             }).AllowAnonymous();
         app.MapGet("auth/refresh",
             ([FromServices] AuthService service, HttpRequest req, HttpResponse res) =>
             {
                 var refreshToken = req.Cookies["refreshToken"];
-
                 if (refreshToken == null) return Results.Unauthorized();
-
                 var tokens = service.refresh(refreshToken);
-                
-                if(tokens == null) return Results.Unauthorized();
-
+                if (tokens == null) return Results.Unauthorized();
                 SetRefreshTokenCookie(ref res, tokens.RefreshToken);
                 return Results.Ok(tokens.AccessToken);
-            });
+            }).AllowAnonymous();
     }
 
     private static void SetRefreshTokenCookie(ref HttpResponse res, string refreshToken)
@@ -69,7 +52,7 @@ public static class AuthEndpoints
         res.Cookies.Append(
             "refreshToken",
             refreshToken,
-            new CookieOptions()
+            new CookieOptions
             {
                 HttpOnly = true,
                 Expires = DateTimeOffset.UtcNow.AddDays(30),

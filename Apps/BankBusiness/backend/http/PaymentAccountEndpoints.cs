@@ -17,12 +17,11 @@ public static class PaymentAccountEndpoints
             if(service.Find(GetEmail(user)) != null) return Results.Conflict();
             service.Create(GetEmail(user));
             return Results.Accepted();
-        })
-            .RequireAuthorization();
-        
-        app.MapGet("/account", (ClaimsPrincipal user, [FromServices] PaymentAccountService service) => 
-            service.Find(GetEmail(user)))
-            .RequireAuthorization();
+        }).RequireAuthorization();
+
+        app.MapGet("/account", (ClaimsPrincipal user, [FromServices] PaymentAccountService service) =>
+        service.Find(GetEmail(user))).RequireAuthorization();
     }
-    public static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
+
+    private static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
 }

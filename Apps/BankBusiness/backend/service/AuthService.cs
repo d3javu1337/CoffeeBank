@@ -21,12 +21,12 @@ public class AuthService
 
     public TokensDto? login(LoginDto dto)
     {
-        BusinessClient? client = _businessClientRepository.FindByEmail(dto.email).Result;
-        if (client != null && _securityService.VerifyPassword(dto.password, client.PasswordHash))
+        BusinessClient? client = _businessClientRepository.FindByEmail(dto.Email).Result;
+        if (client != null && _securityService.VerifyPassword(dto.Password, client.PasswordHash))
         {
             return new TokensDto(
-                _jwtService.GenerateAccessToken(dto.email),
-                _jwtService.GenerateRefreshToken(dto.email)
+                _jwtService.GenerateAccessToken(dto.Email),
+                _jwtService.GenerateRefreshToken(dto.Email)
             );
         }
         return null;

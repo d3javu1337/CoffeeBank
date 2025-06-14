@@ -33,7 +33,7 @@ public class InvoiceService
         return _utilService.formatInvoiceLink(_grpcClient.InvoiceIssue(
             new InvoiceIssueRequest
             {
-                Amount = dto.amount,
+                Amount = dto.Amount,
                 ProviderPaymentAccountId = clientId,
             }
         ).PaymentLink);

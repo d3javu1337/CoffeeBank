@@ -6,10 +6,6 @@ namespace backend.http;
 
 public static class PaymentEndpoints
 {
-    /*
-     * 1. get all payments (mb pageable)
-     * 2. check is invoice paid
-     */
     public static void MapPaymentEndpoints(this WebApplication app)
     {
         app.MapGet("/payment", (
@@ -18,20 +14,18 @@ public static class PaymentEndpoints
             [FromServices] PaymentAccountService paymentAccountService,
             [FromQuery] Guid? paymentId) =>
         {
-            if (paymentId == null)
+            if (paymentId != null)
             {
-                long? id = paymentAccountService.Find(GetEmail(user))?.Id;
-                if (id == null) return Results.Ok();
-                return Results.Ok(paymentService.GetAllByPaymentAccount(id.Value));
+                var payment = paymentService.GetPayment(GetEmail(user), paymentId.Value);
+                return payment == null ? Results.NotFound() : Results.Ok(payment);
             }
-
-            return Results.Ok(paymentService.GetPayment(paymentId.Value));
-        })
-            .RequireAuthorization();
+            long? id = paymentAccountService.Find(GetEmail(user))?.Id;
+            return id == null ? Results.NotFound() : Results.Ok(paymentService.GetAllByPaymentAccount(id.Value));
+        }).RequireAuthorization();
         app.MapGet("/payment/check", ([FromServices] PaymentService paymentService, [FromQuery] Guid invoiceId) =>
             Results.Ok(paymentService.CheckPayment(invoiceId)))
             .RequireAuthorization();
     }
 
-    public static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
+    private static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
 }

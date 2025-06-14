@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<BusinessClientRepository>();
 builder.Services.AddScoped<PaymentAccountRepository>();
 builder.Services.AddScoped<PaymentRepository>();
+builder.Services.AddScoped<ContactPersonRepository>();
 //repos end
 
 builder.Services.AddHttpContextAccessor();
@@ -28,6 +29,7 @@ builder.Services.AddTransient<AuthService>();
 builder.Services.AddTransient<backend.service.InvoiceService>();
 builder.Services.AddTransient<PaymentService>();
 builder.Services.AddTransient<PaymentAccountService>();
+builder.Services.AddTransient<ContactPersonService>();
 builder.Services.AddTransient<SecurityService>();
 builder.Services.AddTransient<backend.service.InvoiceService>();
 builder.Services.AddSingleton<UtilService>(_ => new UtilService(

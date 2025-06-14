@@ -8,15 +8,12 @@ namespace backend.http;
 
 public static class BusinessClientEndpoints
 {
-    /*
-     * 1. get client info 
-     */
     public static void MapBusinessClientEndpoints(this WebApplication app)
     {
-        app.MapGet("/client", ([FromServices]BusinessClientService service, ClaimsPrincipal user) => 
+        app.MapGet("/business-client", ([FromServices] BusinessClientService service, ClaimsPrincipal user) =>
             service.GetByEmail(GetEmail(user)))
-        .RequireAuthorization();
+            .RequireAuthorization();
     }
-    
-    public static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
+
+    private static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
 }
