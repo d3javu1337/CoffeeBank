@@ -17,7 +17,7 @@ public class BusinessMainKafkaService {
     private final BusinessClientService businessClientService;
     private final PaymentAccountService paymentAccountService;
 
-    @KafkaListener(topics = {"business_client_registration_topic"}, containerFactory = "mainKafkaListenerContainerFactory",
+    @KafkaListener(topics = {"business-client_registration_topic"}, containerFactory = "mainKafkaListenerContainerFactory",
             properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.business.client.BusinessClientRegistrationRequest"},
             groupId = "main-core-consumers")
     public void businessClientRegistrationHandler(BusinessClientRegistrationRequest request) {

@@ -6,13 +6,14 @@ namespace backend.service;
 
 public class PaymentService(PaymentRepository repository, PaymentAccountService paymentAccountService)
 {
-    public Payment? GetPayment(string businessClientEmail, Guid paymentId)
+    public PaymentWithAmountDto? GetPayment(string businessClientEmail, Guid paymentId)
     {
         var payment =  repository.Find(paymentId).Result;
-        return payment.ProviderPaymentAccount.Id != paymentAccountService.Find(businessClientEmail)!.Id ? null : payment;
+        return payment.ProviderPaymentAccount.Id != paymentAccountService.Get(businessClientEmail)!.Id ? null : 
+            repository.FindPaymentById(paymentId).Result;
     }
 
-    public List<PaymentWithAmountDto> GetAllByPaymentAccount(long paymentAccountId)
+    public List<PaymentWithAmountDto> GetAllPaymentsByPaymentAccountId(long paymentAccountId)
     {
         return repository.FindAllByPaymentAccount(paymentAccountId).Result;
     }

@@ -24,7 +24,7 @@ public static class AuthEndpoints
                 return Results.Accepted();
             }).AllowAnonymous();
         app.MapPost("/auth/login",
-            ([FromServices] AuthService service, [FromBody] LoginDto dto, HttpRequest req, HttpResponse res) =>
+            ([FromServices] AuthService service, [FromBody] LoginDto dto, HttpResponse res) =>
             {
                 if (dto.Email == null || dto.Password == null || !emailRegex.IsMatch(dto.Email))
                     return Results.BadRequest();

@@ -33,6 +33,22 @@ public class PaymentRepository(DatabaseContext _context)
         // return await _context.Payments.FromSqlRaw($"select p.id from payment p where p.payment_account_id = {paymentAccountId}").ToListAsync();
     }
 
+    public async Task<PaymentWithAmountDto?> FindPaymentById(Guid paymentId)
+    {
+        var t = await _context.Payments
+            .Where(p => p.Id == paymentId)
+            .Select(p => new
+            {
+                paymentId = p.Id,
+                invoiceId = p.Invoice.Id
+            }).FirstOrDefaultAsync();
+        var t1 = _context.Invoices
+            .Where(i => i.Id == t!.invoiceId)
+            .Select(i => new {i.amount, i.Id})
+            .FirstOrDefaultAsync();
+        return new PaymentWithAmountDto(t.paymentId, t1.Result!.amount);
+    }
+
     public async Task<bool> CheckPayment(Guid invoiceId)
     {
         return (await _context.Payments.FromSql($"select * from payment p where p.invoice_id = {invoiceId}").CountAsync()) == 1;

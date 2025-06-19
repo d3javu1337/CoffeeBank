@@ -14,4 +14,12 @@ public class ContactPersonRepository(DatabaseContext _context)
     {
         return await _context.ContactPersons.FindAsync(id);
     }
+
+    public async Task<string?> GetBusinessClientEmailByContactPersonId(long contactPersonId)
+    {
+        return await _context.ContactPersons
+            .Where(x => x.Id == contactPersonId)
+            .Select(x => x.LinledClient.Email)
+            .FirstOrDefaultAsync();
+    }
 }

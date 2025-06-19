@@ -19,7 +19,7 @@ public class InvoiceService
     }
     public string GenerateApiToken(string email)
     {
-        var paymentAccountId = _paymentAccountService.Find(email).Id;
+        var paymentAccountId = _paymentAccountService.Get(email).Id;
         return _grpcClient.InvoiceIssuingTokenCreate(
             new InvoiceIssuingTokenCreateRequest
             {
@@ -29,7 +29,7 @@ public class InvoiceService
 
     public string InvoiceIssue(string email, InvoiceIssueDto dto)
     {
-        var clientId = _paymentAccountService.Find(email).Id;
+        var clientId = _paymentAccountService.Get(email).Id;
         return _utilService.formatInvoiceLink(_grpcClient.InvoiceIssue(
             new InvoiceIssueRequest
             {
@@ -39,6 +39,6 @@ public class InvoiceService
         ).PaymentLink);
     }
 
-    public string GetInvoiceCreateToken(string email) => _paymentAccountService.Find(email).InvoiceCreateToken.ToString();
+    public string GetInvoiceCreateToken(string email) => _paymentAccountService.GetInvoiceCreateTokenByEmail(email)!.Value.ToString();
 
 }

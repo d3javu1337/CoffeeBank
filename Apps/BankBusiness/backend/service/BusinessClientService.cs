@@ -1,4 +1,5 @@
 using backend.dto.BusinessClient;
+using backend.http.responses.BusinessClient;
 using backend.kafka;
 using backend.kafka.requests;
 using backend.model;
@@ -11,14 +12,18 @@ public class BusinessClientService(
     KafkaProducer producer,
     SecurityService securityService)
 {
-    public BusinessClient GetByEmail(string email)
+    public BusinessClientReadDto GetDtoByEmail(string email)
     {
-        return repository.Find(email).Result;
+        var client = repository.Find(email).Result;
+        return new BusinessClientReadDto(
+            client.OfficialName,
+            client.Brand
+        );
     }
 
     public async Task Registration(BusinessClientCreateDto dto)
     {
-        await producer.produce("business_client_registration_topic",
+        await producer.produce("business-client_registration_topic",
                 new BusinessClientCreateRequest(
                     dto.OfficialName,
                     dto.Brand,

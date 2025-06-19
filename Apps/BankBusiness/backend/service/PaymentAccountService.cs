@@ -1,3 +1,4 @@
+using backend.dto.PaymentAccount;
 using backend.kafka;
 using backend.kafka.requests;
 using backend.model;
@@ -10,23 +11,29 @@ public class PaymentAccountService(
     PaymentAccountRepository paymentAccountRepository,
     KafkaProducer kafkaProducer)
 {
-    public PaymentAccount? Find(string clientEmail)
+    public PaymentAccountReadDto? Get(string clientEmail)
     {
-        return paymentAccountRepository.Find(businessClientService.GetIdByEmail(clientEmail)).Result;
+        var account = paymentAccountRepository.Find(businessClientService.GetIdByEmail(clientEmail)).Result;
+        if (account == null) return null;
+        return new PaymentAccountReadDto(account.Id, account.name, account.deposit);
     }
 
+    public Guid? GetInvoiceCreateTokenByEmail(string email)
+    {
+        return paymentAccountRepository.FindInvoiceCreateTokenByAccountId(businessClientService.GetIdByEmail(email)).Result;
+    }
     public async Task Create(string clientEmail)
     {
-        await kafkaProducer.produce("payment_account_create_topic",
+        await kafkaProducer.produce("payment-account_create_topic",
             new PaymentAccountCreateRequest(
                 businessClientService.GetIdByEmail(clientEmail),
                 clientEmail
             ));
     }
 
-    public bool isTokenValid(string clientEmail, Guid token)
+    public bool IsTokenValid(string clientEmail, Guid token)
     {
-        var id = Find(clientEmail)?.Id;
+        var id = Get(clientEmail)?.Id;
         if(id == null) return false;
         return paymentAccountRepository.isTokenValid(id.Value, token).Result;
     }

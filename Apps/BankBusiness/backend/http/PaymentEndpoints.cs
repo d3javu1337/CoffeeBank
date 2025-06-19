@@ -19,8 +19,8 @@ public static class PaymentEndpoints
                 var payment = paymentService.GetPayment(GetEmail(user), paymentId.Value);
                 return payment == null ? Results.NotFound() : Results.Ok(payment);
             }
-            long? id = paymentAccountService.Find(GetEmail(user))?.Id;
-            return id == null ? Results.NotFound() : Results.Ok(paymentService.GetAllByPaymentAccount(id.Value));
+            long? id = paymentAccountService.Get(GetEmail(user))?.Id;
+            return id == null ? Results.NotFound() : Results.Ok(paymentService.GetAllPaymentsByPaymentAccountId(id.Value));
         }).RequireAuthorization();
         app.MapGet("/payment/check", ([FromServices] PaymentService paymentService, [FromQuery] Guid invoiceId) =>
             Results.Ok(paymentService.CheckPayment(invoiceId)))

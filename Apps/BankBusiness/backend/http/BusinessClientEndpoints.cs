@@ -11,7 +11,7 @@ public static class BusinessClientEndpoints
     public static void MapBusinessClientEndpoints(this WebApplication app)
     {
         app.MapGet("/business-client", ([FromServices] BusinessClientService service, ClaimsPrincipal user) =>
-            service.GetByEmail(GetEmail(user)))
+            service.GetDtoByEmail(GetEmail(user)))
             .RequireAuthorization();
     }
 

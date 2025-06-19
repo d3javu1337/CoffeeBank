@@ -9,9 +9,10 @@ public static class ContactPersonEndpoints
 {
     public static void MapContactPersonEndpoints(this WebApplication app)
     {
-        app.MapGet("/contact-person", ([FromServices] ContactPersonService contactPersonService, ClaimsPrincipal user, [FromQuery] long? personId) =>
+        app.MapGet("/contact-person", ([FromServices] ContactPersonService contactPersonService, ClaimsPrincipal user,
+            [FromQuery] long? personId) =>
         {
-            if(personId == null) return Results.Ok(contactPersonService.GetContactPersons(GetEmail(user)));
+            if (personId == null) return Results.Ok(contactPersonService.GetContactPersons(GetEmail(user)));
             return Results.Ok(contactPersonService.GetContactPersonById(personId.Value));
         }).RequireAuthorization();
         app.MapPost("/contact-person", ([FromServices] ContactPersonService contactPersonService,
@@ -20,7 +21,23 @@ public static class ContactPersonEndpoints
             contactPersonService.CreateContactPerson(GetEmail(user), dto);
             return Results.Accepted();
         }).RequireAuthorization();
+        app.MapPut("/contact-person", ([FromServices] ContactPersonService contactPersonService,
+            ClaimsPrincipal user, [FromBody] ContactPersonUpdateDto updateDto) =>
+        {
+            if (!contactPersonService.IsContactPersonLinkedToBusinessClient(GetEmail(user), updateDto.ContactPersonId))
+                return Results.Forbid();
+            contactPersonService.UpdateContactPerson(GetEmail(user), updateDto);
+            return Results.Accepted();
+        }).RequireAuthorization();
+        app.MapDelete("/contact-person", ([FromServices] ContactPersonService contactPersonService,
+            ClaimsPrincipal user, [FromQuery] long personId) =>
+        {
+            if (!contactPersonService.IsContactPersonLinkedToBusinessClient(GetEmail(user), personId))
+                return Results.Forbid();
+            contactPersonService.DeleteContactPerson(GetEmail(user), personId);
+            return Results.Accepted();
+        }).RequireAuthorization();
     }
-    
+
     private static string GetEmail(ClaimsPrincipal user) => user.FindFirst(ClaimTypes.Email).Value;
 }

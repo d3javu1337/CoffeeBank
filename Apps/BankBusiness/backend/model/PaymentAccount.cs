@@ -15,7 +15,7 @@ public class PaymentAccount
     [Column(name: "deposit")]
     public double deposit {get; set;}
     
-    [ForeignKey("business_client_id")]
+    [ForeignKey("business_client_id"), NotMapped]
     public BusinessClient LinkedClient {get; set;}
     
     [Column("invoice_create_token")]

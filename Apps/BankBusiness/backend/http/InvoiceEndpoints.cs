@@ -20,7 +20,7 @@ public static class InvoiceEndpoints
                 ([FromServices] InvoiceService invoiceService,
                     [FromServices] PaymentAccountService paymentAccountService, ClaimsPrincipal user,
                     [FromBody] InvoiceIssueRequest dto) => 
-                    !paymentAccountService.isTokenValid(GetEmail(user), dto.token) ? 
+                    !paymentAccountService.IsTokenValid(GetEmail(user), dto.token) ? 
                         Results.BadRequest() : Results.Ok(invoiceService.InvoiceIssue(GetEmail(user), new InvoiceIssueDto(dto.amount)))
                 )
             .RequireAuthorization();
