@@ -25,7 +25,7 @@ public class BusinessMainKafkaService {
         this.businessClientService.registration(request);
     }
 
-    @KafkaListener(topics = {"payment_account_create_topic"}, containerFactory = "mainKafkaListenerContainerFactory",
+    @KafkaListener(topics = {"payment-account_create_topic"}, containerFactory = "mainKafkaListenerContainerFactory",
             properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.business.paymentaccount.PaymentAccountCreateRequest"},
             groupId = "main-core-consumers")
     public void paymentAccountCreateHandler(PaymentAccountCreateRequest request) {
