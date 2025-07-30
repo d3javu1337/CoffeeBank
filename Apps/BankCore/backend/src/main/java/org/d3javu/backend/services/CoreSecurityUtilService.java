@@ -19,12 +19,12 @@ public class CoreSecurityUtilService {
     public String generateCardNumber(Long id, CardType type) {
         var sb = new StringBuilder(this.cardNumberBase); // 6
         var t = switch (type) {
-            case CardType.credit -> "1";
-            case CardType.debit -> "2";
-            case CardType.overdraft -> "3";
-            case CardType.prepaid -> "4";
+            case CardType.CREDIT -> "1";
+            case CardType.DEBIT -> "2";
+            case CardType.OVERDRAFT -> "3";
+            case CardType.PREPAID -> "4";
             default -> {
-                log.warn("Unrecognised type: {}", type);
+                log.warn("Unrecognised cardType: {}", type);
                 yield null;
             }
         };

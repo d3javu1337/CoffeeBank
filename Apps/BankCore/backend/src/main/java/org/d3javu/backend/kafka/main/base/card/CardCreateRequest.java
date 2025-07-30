@@ -6,6 +6,6 @@ public record CardCreateRequest(
         Long clientId,
         String email,
         Long accountId,
-        CardType type,
+        CardType cardType,
         String name
 ) {}

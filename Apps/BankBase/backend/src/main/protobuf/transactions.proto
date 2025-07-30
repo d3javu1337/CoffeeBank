@@ -1,0 +1,44 @@
+syntax="proto3";
+
+package org.d3javu.backend.grpc;
+option java_package = "org.d3javu.backend.grpc";
+//option java_outer_classname = "InvoiceServiceProto";
+option java_multiple_files = true;
+
+
+message TransferByPhoneNumberRequest {
+  string recipientPhoneNumber = 1;
+  int64 senderAccountId = 2;
+  double amount = 3;
+}
+
+message TransferByPhoneNumberResponse {
+  bool isCompleted = 1;
+}
+
+message InvoicePaymentRequest {
+  int64 payerAccountId = 1;
+  string invoiceUUID = 2;
+}
+
+message InvoicePaymentResponse{
+  bool isCompleted = 1;
+}
+
+message InvoiceIssueRequest{
+  int64 providerPaymentAccountId = 1;
+  double amount = 2;
+}
+
+message InvoiceIssueResponse{
+  string paymentLink = 1;
+}
+
+service TransactionService {
+  rpc TransferByPhoneNumber(TransferByPhoneNumberRequest) returns (TransferByPhoneNumberResponse) {}
+  rpc InvoicePayment(InvoicePaymentRequest) returns (InvoicePaymentResponse) {}
+}
+
+service InvoiceService {
+  rpc InvoiceIssue(InvoiceIssueRequest) returns (InvoiceIssueResponse){}
+}

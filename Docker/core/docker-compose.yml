@@ -12,18 +12,14 @@ services:
     build:
       context: '../../../CoffeeBank/Apps/BankCore/backend'
       dockerfile: Dockerfile
-#    ports:
-#      - '127.0.0.1:8080:8082'
+    expose:
+      - 9090
+      - 8080
+    ports:
+      - '127.0.0.1:9090:9090'
+      - '127.0.0.1:8080:8080'
     environment:
       SPRING_DATASOURCE_URL: 'jdbc:postgresql://database:5432/CoffeeBank'
-    networks:
-      - appNetwork
-
-  frontend:
-    build:
-      context: '../../../CoffeeBank/Apps/BankCore/frontend'
-      dockerfile: Dockerfile
-    ports:
-      - '127.0.0.1:3000:3000'
+      SPRING_KAFKA_MAIN_CONSUMER_BOOTSTRAP-SERVERS: "broker-1:19092, broker-2:19092, broker-3:19092"
     networks:
       - appNetwork

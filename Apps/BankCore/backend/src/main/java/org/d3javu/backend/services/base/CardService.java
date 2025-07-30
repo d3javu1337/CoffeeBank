@@ -29,7 +29,7 @@ public class CardService {
         else{
             var id = this.cardRepository.initCard(
                     cardCreateRequest.name(),
-                    cardCreateRequest.type().name(),
+                    cardCreateRequest.cardType().name(),
                     "-1",
                     LocalDate.now().plusYears(10),
                     cardCreateRequest.accountId(),
@@ -38,7 +38,7 @@ public class CardService {
             if(id > 10000000) log.warn("Id of card creation exceeded 10000000. Take care about overload");
             var cardNumber = this.coreSecurityUtilService.generateCardNumber(
                     id,
-                    cardCreateRequest.type()
+                    cardCreateRequest.cardType()
             );
             log.info("Card number generated: {}", cardNumber);
             this.cardRepository.updateCardAfterInit(id, cardNumber);

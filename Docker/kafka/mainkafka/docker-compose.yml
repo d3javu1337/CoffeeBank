@@ -3,7 +3,8 @@ version: '3.9'
 name: main_kafka
 
 networks:
-  main_kafka:
+  appNetwork:
+    external: true
     driver: bridge
 
 volumes:
@@ -23,6 +24,8 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     volumes:
       - ./kafka_data:/var/lib/kafka/data
+    networks:
+      - appNetwork
 
   controller-2:
     image: apache/kafka:latest
@@ -37,6 +40,8 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     volumes:
       - ./kafka_data:/var/lib/kafka/data
+    networks:
+      - appNetwork
 
   controller-3:
     image: apache/kafka:latest
@@ -51,10 +56,14 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     volumes:
       - ./kafka_data:/var/lib/kafka/data
+    networks:
+      - appNetwork
 
   broker-1:
     image: apache/kafka:latest
     container_name: broker-1
+    expose:
+      - 9092
     ports:
       - 29092:9092
     environment:
@@ -73,10 +82,14 @@ services:
       - controller-3
     volumes:
       - ./kafka_data:/var/lib/kafka/data
+    networks:
+      - appNetwork
 
   broker-2:
     image: apache/kafka:latest
     container_name: broker-2
+    expose:
+      - 9092
     ports:
       - 39092:9092
     environment:
@@ -95,10 +108,14 @@ services:
       - controller-3
     volumes:
       - ./kafka_data:/var/lib/kafka/data
+    networks:
+      - appNetwork
 
   broker-3:
     image: apache/kafka:latest
     container_name: broker-3
+    expose:
+      - 9092
     ports:
       - 49092:9092
     environment:
@@ -117,3 +134,5 @@ services:
       - controller-3
     volumes:
       - ./kafka_data:/var/lib/kafka/data
+    networks:
+      - appNetwork
