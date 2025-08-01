@@ -14,22 +14,24 @@ case class BusinessClient(
 
 }
 
-inline given SchemaMeta[BusinessClient] = schemaMeta(
-  "business_client",
-  _.id -> "id",
-  _.officialName -> "official_name",
-  _.brand -> "brand",
-  _.email -> "email",
-  _.passwordHash -> "password_hash"
-)
-
-inline given InsertMeta[BusinessClient] = insertMeta(_.id)
-
-inline given UpdateMeta[BusinessClient] = updateMeta(_.id)
-
-implicit val businessClientSchema: Schema[BusinessClient] = DeriveSchema.gen[BusinessClient]
-
 object BusinessClient {
+  inline given SchemaMeta[BusinessClient] = schemaMeta(
+    "business_client",
+    _.id -> "id",
+    _.officialName -> "official_name",
+    _.brand -> "brand",
+    _.email -> "email",
+    _.passwordHash -> "password_hash"
+  )
+
+  inline given InsertMeta[BusinessClient] = insertMeta(_.id)
+
+  inline given UpdateMeta[BusinessClient] = updateMeta(_.id)
+
+  implicit val businessClientSchema: Schema[BusinessClient] = DeriveSchema.gen[BusinessClient]
+
   implicit val encoder: JsonEncoder[BusinessClient] = DeriveJsonEncoder.gen[BusinessClient]
+
   implicit val decoder: JsonDecoder[BusinessClient] = DeriveJsonDecoder.gen[BusinessClient]
+
 }

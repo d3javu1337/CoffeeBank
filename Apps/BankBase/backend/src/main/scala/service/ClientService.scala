@@ -23,15 +23,19 @@ case class ClientService() {
       .someOrFail(NoEntityPresented())
   }
 
-  def existsClientByEmail(email: String): RIO[ClientRepository, Boolean] = ZIO.serviceWithZIO[ClientRepository](_.existsClientByEmail(email))
+  def existsClientByEmail(email: String): RIO[ClientRepository, Boolean] = {
+    ZIO.serviceWithZIO[ClientRepository](_.existsClientByEmail(email))
+  }
 
-  def loadPrincipal(email: String): RIO[ClientRepository, Principal] =
+  def loadPrincipal(email: String): RIO[ClientRepository, Principal] = {
     ZIO.serviceWithZIO[ClientRepository](_.loadPrincipal(email))
-      .someOrFail(AuthError("user id disabled"))
+      .someOrFail(AuthError("user is disabled"))
+  }
 
-  def loadAuthData(email: String): RIO[ClientRepository, AuthData] =
+  def loadAuthData(email: String): RIO[ClientRepository, AuthData] = {
     ZIO.serviceWithZIO[ClientRepository](_.loadAuthData(email))
       .someOrFail(AuthError(""))
+  }
 
 }
 

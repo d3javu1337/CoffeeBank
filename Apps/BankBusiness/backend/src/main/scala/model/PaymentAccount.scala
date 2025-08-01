@@ -12,15 +12,17 @@ case class PaymentAccount(
                            invoiceCreateToken: UUID
                          )
 
-inline given SchemaMeta[PaymentAccount] = schemaMeta(
-  "payment_account",
-  _.id -> "id",
-  _.name -> "name",
-  _.deposit -> "deposit",
-  _.businessClientId -> "business_client_id",
-  _.invoiceCreateToken -> "invoice_create_token"
-)
+object PaymentAccount {
+  inline given SchemaMeta[PaymentAccount] = schemaMeta(
+    "payment_account",
+    _.id -> "id",
+    _.name -> "name",
+    _.deposit -> "deposit",
+    _.businessClientId -> "business_client_id",
+    _.invoiceCreateToken -> "invoice_create_token"
+  )
 
-inline given InsertMeta[PaymentAccount] = insertMeta(_.id)
+  inline given InsertMeta[PaymentAccount] = insertMeta(_.id)
 
-inline given UpdateMeta[PaymentAccount] = updateMeta(_.id)
+  inline given UpdateMeta[PaymentAccount] = updateMeta(_.id)
+}

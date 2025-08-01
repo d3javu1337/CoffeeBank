@@ -10,13 +10,15 @@ case class Payment(
                   invoiceId: UUID
                   )
 
-inline given SchemaMeta[Payment] = schemaMeta(
-  "payment",
-  _.id -> "id",
-  _.paymentAccountId -> "payment_account_id",
-  _.invoiceId -> "invoice_id"
-)
+object Payment {
+  inline given SchemaMeta[Payment] = schemaMeta(
+    "payment",
+    _.id -> "id",
+    _.paymentAccountId -> "payment_account_id",
+    _.invoiceId -> "invoice_id"
+  )
 
-inline given InsertMeta[Payment] = insertMeta(_.id)
+  inline given InsertMeta[Payment] = insertMeta(_.id)
 
-inline given UpdateMeta[Payment] = updateMeta(_.id)
+  inline given UpdateMeta[Payment] = updateMeta(_.id)
+}

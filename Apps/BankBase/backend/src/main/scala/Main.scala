@@ -1,7 +1,7 @@
 import configuration.{GrpcConfig, JWTConfig, KafkaConfig, MongoConfig}
 import dao.mongo.{MongoDB, SessionDocumentDAL}
 import dao.postgres.DatabaseContext
-import dao.postgres.repository.{CardRepository, ClientRepository, InvoiceRepository, PaymentRepository, PersonalAccountRepository}
+import dao.postgres.repository.{CardRepository, ClientRepository, InvoiceRepository, PaymentRepository, PersonalAccountRepository, TransactionRepository}
 import grpc.GrpcClient
 import internalkafka.ProducerService
 import org.d3javu.backend.grpc.transactions.ZioTransactions.TransactionServiceClient
@@ -10,7 +10,7 @@ import security.{PasswordEncoder, SecurityService}
 import service.{AuthService, CardService, ClientService, InvoiceService, PaymentService, PersonalAccountService, SessionService, TransactionService}
 import web.middleware.JWTAuthMiddlewareWithContext
 import web.routes.{AuthRoutes, CardRoutes, ClientRoutes, PersonalAccountRoutes, SessionsRoutes, TransactionRoutes}
-import zio._
+import zio.*
 import zio.http.netty.NettyConfig
 import zio.http.netty.NettyConfig.LeakDetectionLevel.PARANOID
 import zio.http.Server
@@ -32,7 +32,8 @@ object Main extends ZIOAppDefault {
     CardRepository.layer ++
     InvoiceRepository.layer ++
     PaymentRepository.layer ++
-    PersonalAccountRepository.layer
+    PersonalAccountRepository.layer ++
+    TransactionRepository.layer
 
   private val serviceLayer = AuthService.layer ++
     ProducerService.layer ++
