@@ -1,5 +1,6 @@
 package mongo
 
+import configuration.MongoConfig
 import io.github.zeal18.zio.mongodb.bson.annotations.BsonId
 import io.github.zeal18.zio.mongodb.driver.{MongoDatabase, ReadConcern, WriteConcern, filters}
 import zio.{RLayer, Task, ZIO, ZLayer}
@@ -14,11 +15,12 @@ trait EmailConfirmDocumentDAL {
 }
 
 object EmailConfirmDocumentDAL {
-  val live: RLayer[MongoDatabase, EmailConfirmDocumentDAL] = ZLayer.scoped(
+  val live: RLayer[MongoDatabase & MongoConfig, EmailConfirmDocumentDAL] = ZLayer.scoped(
     for {
       mongo <- ZIO.service[MongoDatabase]
+      collectionName <- ZIO.serviceWith[MongoConfig](_.collection)
       coll = mongo
-        .getCollection[EmailConfirmDocument]("EmailConfirmation")
+        .getCollection[EmailConfirmDocument](collectionName)
         .withReadConcern(ReadConcern.MAJORITY)
         .withWriteConcern(WriteConcern.MAJORITY)
     } yield new EmailConfirmDocumentDAL:

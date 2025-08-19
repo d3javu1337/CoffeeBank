@@ -24,3 +24,8 @@ libraryDependencies += "com.github.eikek" %% "emil-common" % "0.19.0"
 libraryDependencies += "com.github.eikek" %% "emil-javamail" % "0.19.0"
 libraryDependencies += "dev.zio" %% "zio-http" % "3.2.0"
 libraryDependencies += "dev.zio" %% "zio-json" % "0.7.43"
+
+libraryDependencies += "dev.zio" %% "zio-config" % "4.0.4"
+libraryDependencies += "dev.zio" %% "zio-config-typesafe" % "4.0.4"
+libraryDependencies += "dev.zio" %% "zio-config-magnolia" % "4.0.4"
+libraryDependencies += "dev.zio" %% "zio-config-refined" % "4.0.4"
