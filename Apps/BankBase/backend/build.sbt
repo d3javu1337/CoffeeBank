@@ -54,3 +54,6 @@ libraryDependencies ++= Seq(
   "io.grpc" % "grpc-netty" % "1.50.1",
   "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
 )
+
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
