@@ -1,0 +1,4 @@
+scalacOptions += "-Wnonunit-statement"
+scalacOptions += "-Ymacro-annotations"
+scalacOptions += "-Ymacro-expand:normal",
+scalacOptions += "-language:experimental.macros"
