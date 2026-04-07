@@ -1,0 +1,30 @@
+version: '3.9'
+
+volumes:
+  auth_pg_data:
+  sessions_data:
+    name: "sessions_data_mongo"
+
+services:
+  db:
+    image: postgres:16.3-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: CoffeeBank_AuthDB
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: auth
+    expose:
+      - 5432
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/001.sql
+      - auth_pg_data:/var/lib/postgresql/data
+    hostname: database
+    container_name: database
+    deploy:
+      resources:
+        limits:
+          memory: 500MB
+        reservations:
+          memory: 500MB

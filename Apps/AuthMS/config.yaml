@@ -1,0 +1,39 @@
+# prod | test
+mode: "prod"
+
+webserver:
+  port: 8888
+
+postgres:
+  username: "postgres"
+  password: "postgres"
+  host: "localhost"
+  port: 5433
+  database: "CoffeeBank_AuthDB"
+  transaction:
+    retry_times: 3
+    retry_delay: 3s
+    retry_timeout: 10s
+
+mongodb:
+  username: "root"
+  password: "root"
+  host: "localhost"
+  port: 27017
+  auth-database: "admin"
+  database: "sessions"
+  collection: "Sessions"
+
+jwt:
+  access-secret: "access"
+  refresh-secret: "refresh"
+
+kafka:
+  bootstrap-servers: "localhost:29092,localhost:39092,localhost:49092"
+  topics:
+    base-registration-request-topic: "base_registration_request_topic"
+    base-registration-response-topic: "base_registration_response_topic"
+    business-registration-request-topic: "business_registration_request_topic"
+    business-registration-response-topic: "business_registration_response_topic"
+  producer-group: "auth-ms-producers"
+  consumer-group: "auth-ms-consumers"

@@ -1,0 +1,53 @@
+version: '3.9'
+
+volumes:
+  auth_pg_data:
+  sessions_data:
+    name: "sessions_data_mongo"
+
+services:
+  db:
+    image: postgres:16.3-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: CoffeeBank_AuthDB
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: auth
+    expose:
+      - 5432
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/001.sql
+      - auth_pg_data:/var/lib/postgresql/data
+    hostname: database
+    container_name: database
+    deploy:
+      resources:
+        limits:
+          memory: 500MB
+        reservations:
+          memory: 500MB
+
+  mongo:
+    image: mongo:noble
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    command: mongod --setParameter diagnosticDataCollectionEnabled=false
+    volumes:
+      - sessions_data:/data/db
+    ports:
+      - '27017:27017'
+
+  mongo-express:
+    image: mongo-express
+    restart: no
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: sessions://root:root@sessions:27017/
+      ME_CONFIG_BASICAUTH: false
