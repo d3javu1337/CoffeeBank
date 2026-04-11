@@ -2,7 +2,9 @@ package infra
 
 import (
 	"AuthMS/config"
+	"AuthMS/model/outbox"
 	"context"
+	"fmt"
 	"log"
 	"log/slog"
 	"strings"
@@ -15,7 +17,6 @@ type KafkaClient struct {
 	topics *config.KafkaTopicsConfig
 	reader *kafka.Reader
 	writer *kafka.Writer
-	cfg    *config.KafkaConfig
 }
 
 func NewKafkaClientImpl(cfg *config.KafkaConfig) *KafkaClient {
@@ -35,7 +36,6 @@ func NewKafkaClientImpl(cfg *config.KafkaConfig) *KafkaClient {
 		topics: cfg.Topics,
 		reader: reader,
 		writer: writer,
-		cfg:    cfg,
 	}
 }
 
@@ -51,30 +51,32 @@ func (client *KafkaClient) Destroy() {
 	slog.Info("Closed kafka connection")
 }
 
-func (client *KafkaClient) SendBaseRegistrationRequest(ctx context.Context, id string, dto []byte) error {
-	if err := client.writer.WriteMessages(ctx, kafka.Message{
-		Topic: client.topics.BaseRegistrationRequestTopic,
+func (client *KafkaClient) SendRequest(ctx context.Context, id string, dto []byte, requestType outbox.RegistrationOutboxType) error {
+	topic, err := client.getTopicNameByRequestType(requestType)
+	if err != nil {
+		return err
+	}
+	err = client.writer.WriteMessages(ctx, kafka.Message{
+		Topic: *topic,
 		Key:   []byte(id),
 		Value: dto,
 		Time:  time.Now(),
-	}); err != nil {
-		slog.Error("Kafka send error", "topic", client.topics.BaseRegistrationRequestTopic, "error", err)
+	})
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (client *KafkaClient) SendBusinessRegistrationRequest(ctx context.Context, id string, dto []byte) error {
-	if err := client.writer.WriteMessages(ctx, kafka.Message{
-		Topic: client.topics.BusinessRegistrationRequestTopic,
-		Key:   []byte(id),
-		Value: dto,
-		Time:  time.Now(),
-	}); err != nil {
-		slog.Error("Kafka send error", "topic", client.topics.BusinessRegistrationRequestTopic, "error", err)
-		return err
+func (client *KafkaClient) getTopicNameByRequestType(requestType outbox.RegistrationOutboxType) (*string, error) {
+	switch requestType {
+	case outbox.BASE:
+		return &client.topics.BaseRegistrationRequestTopic, nil
+	case outbox.BUSINESS:
+		return &client.topics.BusinessRegistrationRequestTopic, nil
+	default:
+		return nil, fmt.Errorf("not found match for outbox type and topics")
 	}
-	return nil
 }
 
 func (client *KafkaClient) HandleRegistrationResponse(ctx context.Context) (*string, error) {

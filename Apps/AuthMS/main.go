@@ -9,6 +9,7 @@ import (
 	"AuthMS/routes"
 	"AuthMS/service/auth"
 	"AuthMS/service/jwt"
+	"AuthMS/service/mq"
 	"AuthMS/service/outbox"
 	"AuthMS/service/security"
 	"AuthMS/service/session"
@@ -76,7 +77,8 @@ func main() {
 
 	// service
 	securityService := new(security.SecurityServiceImpl)
-	outboxService := outbox.NewOutboxServiceImpl(kafkaClient, outboxRepo)
+	kafkaService := mq.NewKafkaServiceImpl(kafkaClient)
+	outboxService := outbox.NewOutboxServiceImpl(kafkaService, outboxRepo)
 	jwtService := jwt.NewJWTServiceImpl(cfg.GetAppConfig().JWTConfig)
 	sessionService := session.NewSessionServiceImpl(sessionsRepo)
 	authService := auth.NewClientAuthServiceImpl(authRepo, outboxRepo, sessionService, securityService, jwtService)

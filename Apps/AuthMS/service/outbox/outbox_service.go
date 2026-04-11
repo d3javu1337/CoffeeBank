@@ -1,9 +1,9 @@
 package outbox
 
 import (
-	"AuthMS/infra"
 	"AuthMS/model/outbox"
 	"AuthMS/repositry/postgres"
+	"AuthMS/service/mq"
 	"context"
 	"log/slog"
 	"time"
@@ -12,18 +12,18 @@ import (
 )
 
 type OutboxService interface {
-	StartWorkers()
+	StartWorkers(ctx context.Context)
 }
 
 type OutboxServiceImpl struct {
-	repo        postgres.OutboxRepository
-	kafkaClient *infra.KafkaClient
+	repo         postgres.OutboxRepository
+	kafkaService mq.KafkaService
 }
 
-func NewOutboxServiceImpl(kafkaClient *infra.KafkaClient, repo postgres.OutboxRepository) *OutboxServiceImpl {
+func NewOutboxServiceImpl(kafkaService mq.KafkaService, repo postgres.OutboxRepository) *OutboxServiceImpl {
 	return &OutboxServiceImpl{
-		kafkaClient: kafkaClient,
-		repo:        repo,
+		kafkaService: kafkaService,
+		repo:         repo,
 	}
 }
 
@@ -48,9 +48,9 @@ func (service *OutboxServiceImpl) startScheduledProducer(ctx context.Context) {
 				for _, record := range vals {
 					var err error
 					if record.Type == outbox.BASE {
-						err = service.kafkaClient.SendBaseRegistrationRequest(ctx, record.ClientId, record.Payload)
+						err = service.kafkaService.SendRegistrationBase(ctx, record.ClientId, record.Payload)
 					} else {
-						err = service.kafkaClient.SendBusinessRegistrationRequest(ctx, record.ClientId, record.Payload)
+						err = service.kafkaService.SendRegistrationBusiness(ctx, record.ClientId, record.Payload)
 					}
 					if err == nil {
 						_ = service.repo.UpdateRecord(ctx, transaction, record.ClientId)
@@ -73,7 +73,7 @@ func (service *OutboxServiceImpl) startScheduledConsumer(ctx context.Context) {
 		case <-ticker.C:
 			{
 				for i := 0; i < 10; i++ {
-					id, err := service.kafkaClient.HandleRegistrationResponse(ctx)
+					id, err := service.kafkaService.HandleResponse(ctx)
 					if err != nil {
 						slog.Error("Kafka error", "error", err)
 						continue

@@ -1,22 +1,35 @@
 package mq
 
-import "github.com/segmentio/kafka-go"
+import (
+	"AuthMS/infra"
+	"AuthMS/model/outbox"
+	"context"
+)
 
 type KafkaService interface {
-	SendRegistrationBase()
-	SendRegistrationBusiness()
-	WaitResponseBase()
-	WaitResponseBusiness()
+	SendRegistrationBase(ctx context.Context, id string, dto []byte) error
+	SendRegistrationBusiness(ctx context.Context, id string, dto []byte) error
+	HandleResponse(ctx context.Context) (*string, error)
 }
 
 type KafkaServiceImpl struct {
-	producer *kafka.Writer
-	consumer *kafka.Reader
+	client *infra.KafkaClient
 }
 
-func NewKafkaServiceImpl(producer *kafka.Writer, consumer *kafka.Reader) *KafkaServiceImpl {
+func NewKafkaServiceImpl(client *infra.KafkaClient) *KafkaServiceImpl {
 	return &KafkaServiceImpl{
-		producer: producer,
-		consumer: consumer,
+		client: client,
 	}
+}
+
+func (service *KafkaServiceImpl) SendRegistrationBase(ctx context.Context, id string, dto []byte) error {
+	return service.client.SendRequest(ctx, id, dto, outbox.BASE)
+}
+
+func (service *KafkaServiceImpl) SendRegistrationBusiness(ctx context.Context, id string, dto []byte) error {
+	return service.client.SendRequest(ctx, id, dto, outbox.BUSINESS)
+}
+
+func (service *KafkaServiceImpl) HandleResponse(ctx context.Context) (*string, error) {
+	return service.client.HandleRegistrationResponse(ctx)
 }
