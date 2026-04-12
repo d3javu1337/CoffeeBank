@@ -14,13 +14,16 @@ import java.util.Optional;
 public interface BaseClientRepository extends JpaRepository<Client, Long> {
 
     @Query(value = "insert into " +
-            "client(surname, name, patronymic, date_of_birth, phone_number, email, password_hash, is_enabled) " +
-            "values (:surname, :name, :patronymic, :dateOfBirth, :phoneNumber, :email, :passwordHash, false) " +
+            "client(id, surname, name, patronymic, date_of_birth, phone_number, email) " +
+            "values (:id, :surname, :name, :patronymic, :dateOfBirth, :phoneNumber, :email) " +
             "returning id",
             nativeQuery = true)
     Long registration(
-            String surname, String name, String patronymic, LocalDate dateOfBirth,
-            String phoneNumber, String email, String passwordHash);
+            String id, String surname, String name, String patronymic,
+            LocalDate dateOfBirth, String phoneNumber, String email);
+
+    @Query(value = "select count(*)>0 from client c where c.id = :id", nativeQuery = true)
+    Boolean isClientExist(String id);
 
     @Modifying
     @Query(value = "update client set is_enabled=true where email= :email",

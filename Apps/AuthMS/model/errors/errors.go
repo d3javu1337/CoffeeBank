@@ -1,18 +1,11 @@
 package errors
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-type ClientAlreadyExistsError struct {
-	arg string
-}
-
-func NewClientAlreadyExistsError(email string) *ClientAlreadyExistsError {
-	return &ClientAlreadyExistsError{arg: email}
-}
-
-func (e *ClientAlreadyExistsError) Error() string {
-	return fmt.Sprintf("Client with email %s already exists", e.arg)
-}
+var ClientAlreadyExistsError = errors.New("client already exists")
 
 type WrongStringRepresentationOfRoleError struct {
 	arg string

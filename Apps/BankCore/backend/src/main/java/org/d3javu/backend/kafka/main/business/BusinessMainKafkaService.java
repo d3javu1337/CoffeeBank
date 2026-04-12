@@ -17,11 +17,10 @@ public class BusinessMainKafkaService {
     private final BusinessClientService businessClientService;
     private final PaymentAccountService paymentAccountService;
 
-    @KafkaListener(topics = {"business-client_registration_topic"}, containerFactory = "mainKafkaListenerContainerFactory",
+    @KafkaListener(topics = {"business_registration_request_topic"}, containerFactory = "mainKafkaListenerContainerFactory",
             properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.business.client.BusinessClientRegistrationRequest"},
             groupId = "main-core-consumers")
     public void businessClientRegistrationHandler(BusinessClientRegistrationRequest request) {
-        System.out.println(request.officialName());
         this.businessClientService.registration(request);
     }
 

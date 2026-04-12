@@ -9,9 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public interface BusinessClientRepository extends JpaRepository<BusinessClient, Long> {
 
-    @Query(value = "insert into business_client(official_name, brand, email, password_hash) " +
-            "values (:officialName, :brand, :email, :passwordHash) returning id",
+    @Query(value = "insert into business_client(id, official_name, brand, email) " +
+            "values (:id, :officialName, :brand, :email) returning id",
             nativeQuery = true)
-    Long registration(String officialName, String brand, String email, String passwordHash);
+    Long registration(String id, String officialName, String brand, String email);
+
+    @Query(value = "select count(*)>0 from business_client bc where bc.id= :id", nativeQuery = true)
+    Boolean isClientExist(String id);
 
 }

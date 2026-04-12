@@ -50,7 +50,7 @@ public class MainKafkaService {
         this.cardService.renameCard(cardRenameRequest);
     }
 
-    @KafkaListener(topics = "client-registration-topic", containerFactory = "mainKafkaListenerContainerFactory",
+    @KafkaListener(topics = "base_registration_request_topic", containerFactory = "mainKafkaListenerContainerFactory",
             properties = {"spring.json.value.default.type=org.d3javu.backend.kafka.main.base.client.BaseClientRegistrationRequest"},
             groupId = "main-core-consumers")
     public void baseClientRegistrationHandler(BaseClientRegistrationRequest baseClientRegistrationRequest) {

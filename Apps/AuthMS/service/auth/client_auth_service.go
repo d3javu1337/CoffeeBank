@@ -60,7 +60,7 @@ func (service *ClientAuthServiceImpl) BaseRegistration(ctx context.Context, requ
 		return err
 	}
 	if *exists {
-		return errors.NewClientAlreadyExistsError(request.Email)
+		return errors.ClientAlreadyExistsError
 	}
 
 	hash, err := service.securityService.HashPassword(request.Password)
@@ -81,6 +81,7 @@ func (service *ClientAuthServiceImpl) BaseRegistration(ctx context.Context, requ
 	}(transaction, ctx)
 
 	serializedDto, err := json.Marshal(dto.BaseRegistrationDto{
+		Id:          *id,
 		Surname:     request.Surname,
 		Name:        request.Name,
 		Patronymic:  request.Patronymic,
@@ -114,7 +115,7 @@ func (service *ClientAuthServiceImpl) BusinessRegistration(ctx context.Context, 
 		return err
 	}
 	if *exists {
-		return errors.NewClientAlreadyExistsError(request.Email)
+		return errors.ClientAlreadyExistsError
 	}
 
 	hash, err := service.securityService.HashPassword(request.Password)
@@ -135,6 +136,7 @@ func (service *ClientAuthServiceImpl) BusinessRegistration(ctx context.Context, 
 	}(transaction, ctx)
 
 	serializedDto, err := json.Marshal(dto.BusinessRegistrationDto{
+		Id:           *id,
 		OfficialName: request.OfficialName,
 		Brand:        request.Brand,
 		Email:        request.Email,
