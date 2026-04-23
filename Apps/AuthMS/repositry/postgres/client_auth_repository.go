@@ -90,8 +90,9 @@ func (repo *ClientAuthRepositoryImpl) InsertClientAuthData(ctx context.Context, 
 	}
 	if _, err := tr.Exec(
 		ctx,
-		"insert into client_auth_data(email, phone_number, password_hash) values ($1, $2, $3)",
-		data.Email, *data.PhoneNumber, data.PasswordHash); err != nil {
+		"insert into client_auth_data(email, phone_number, password_hash) values ($1, null, $2)",
+		data.Email, data.PasswordHash); err != nil {
+		tr.Rollback(ctx)
 		return nil, nil, err
 	}
 	row := tr.QueryRow(ctx, "select cd.id from client_auth_data cd where cd.email=$1", data.Email)

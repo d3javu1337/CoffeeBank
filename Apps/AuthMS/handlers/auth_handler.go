@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -116,6 +117,7 @@ func (handler *AuthHandlerImpl) BusinessRegistration(w http.ResponseWriter, r *h
 		Password:     parsed.Password,
 	})
 	if err != nil {
+		slog.Error("error", "err", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
