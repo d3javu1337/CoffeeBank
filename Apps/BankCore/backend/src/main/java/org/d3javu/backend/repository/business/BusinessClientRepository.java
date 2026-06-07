@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public interface BusinessClientRepository extends JpaRepository<BusinessClient, Long> {
 
@@ -13,5 +14,8 @@ public interface BusinessClientRepository extends JpaRepository<BusinessClient, 
             "values (:officialName, :brand, :email, :passwordHash) returning id",
             nativeQuery = true)
     Long registration(String officialName, String brand, String email, String passwordHash);
+
+    @Query(value = "select bc.id from business_client bc where bc.email= :email", nativeQuery = true)
+    Optional<Long> findIdByEmail(String email);
 
 }

@@ -11,7 +11,7 @@ import zio.http.codec.PathCodec.literal
 import zio.json._
 
 object BusinessClientEndpoints {
-  val routes: Routes[Principal & BusinessClientService & BusinessClientRepositoryLive, Nothing] = literal("business-client") / Routes.fromIterable(
+  val routes: Routes[Principal & BusinessClientService & BusinessClientRepositoryLive, Nothing] = literal("api") / literal("business-client") / Routes.fromIterable(
     Chunk(
       Method.GET / "" -> handler {
         (req: Request) =>

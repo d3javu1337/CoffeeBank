@@ -26,7 +26,7 @@ case class ContactPersonRepositoryLive(private val ds: DataSource) extends Conta
     run(quote {
       contactPersons
         .filter(_.businessClientId == lift(businessClientId))
-        .map(c => ContactPersonReadDto(c.surname, c.name, c.patronymic, c.phoneNumber, c.email))
+        .map(c => ContactPersonReadDto(c.id, c.surname, c.name, c.patronymic, c.phoneNumber, c.email))
     })
       .mapError(e => Throwable(e.getMessage))
       .provideLayer(dsLayer)
@@ -44,7 +44,7 @@ case class ContactPersonRepositoryLive(private val ds: DataSource) extends Conta
     run(quote {
       contactPersons
         .filter(p => p.id == lift(contactPersonId) && p.businessClientId == lift(businessClientId))
-        .map(c => ContactPersonReadDto(c.surname, c.name, c.patronymic, c.phoneNumber, c.email))
+        .map(c => ContactPersonReadDto(c.id, c.surname, c.name, c.patronymic, c.phoneNumber, c.email))
     })
       .mapBoth(e => Throwable(e.getMessage), _.headOption)
       .provideLayer(dsLayer)

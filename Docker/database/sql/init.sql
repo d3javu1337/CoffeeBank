@@ -105,3 +105,9 @@ create table payment(
     transaction_id uuid references transaction(id) not null,
     invoice_id uuid references invoice(id) not null unique
 );
+
+create table admin(
+    role varchar(50)
+) inherits(client);
+
+create view auth as select id, email, password_hash, 'client' as role from client union select id, email, password_hash, 'business_client' as role from business_client union select id, email, password_hash, role from admin;

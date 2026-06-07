@@ -3,6 +3,7 @@ package dto.contactperson
 import zio.json.{DeriveJsonCodec, DeriveJsonDecoder, DeriveJsonEncoder, JsonCodec, JsonDecoder, JsonEncoder}
 
 case class ContactPersonReadDto(
+                               id: Long,
                                surname: String,
                                name: String,
                                patronymic: String,

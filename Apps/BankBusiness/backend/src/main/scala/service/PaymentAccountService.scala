@@ -32,10 +32,9 @@ case class PaymentAccountService(
     } yield offset.isDefined
   }
 
-  def isTokenValid(clientEmail: String, token: UUID): RIO[BusinessClientRepository, Boolean] = for {
-    paymentAcc <- getPaymentAccountByClientEmail(clientEmail)
-    isValid <- paymentAccountRepository.isTokenValid(paymentAcc.id, token)
-  } yield isValid
+  def getAccountIdByInvoiceToken(token: UUID): RIO[BusinessClientRepository, Long] = 
+    paymentAccountRepository.findIdByToken(token)
+      .someOrFail(NoEntityPresented())
 
   def getAccountIdByClientEmail(businessClientEmail: String): Task[Long] =
     paymentAccountRepository.findIdByClientEmail(businessClientEmail)

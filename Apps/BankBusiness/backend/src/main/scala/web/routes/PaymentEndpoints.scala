@@ -12,7 +12,7 @@ import dto.payment.PaymentWithAmountDto.*
 import java.util.UUID
 
 object PaymentEndpoints {
-  val routes: Routes[Principal & BusinessClientRepository & PaymentService, Nothing] = literal("payment") / Routes.fromIterable(
+  val routes: Routes[Principal & BusinessClientRepository & PaymentService, Nothing] = literal("api") / literal("payment") / Routes.fromIterable(
     Chunk(
       Method.GET / "" -> handler {
         (req: Request) =>

@@ -12,7 +12,7 @@ val JWTAuthMiddlewareWithContext: HandlerAspect[JWTService, Principal] =
       case Some(Header.Authorization.Bearer(token)) =>
         ZIO.serviceWithZIO[JWTService](_.getEmail(token.stringValue, ACCESS))
           .someOrFail(Response.badRequest)
-        .map(email => (request, Principal(email)))
+        .map(email => (request.addHeader(Header.Custom("email", email)), Principal(email)))
         .catchAll(e => ZIO.fail(Response.unauthorized(e.toString)))
       case _ => ZIO.fail(Response.unauthorized.addHeaders(Headers(Header.WWWAuthenticate.Bearer(realm = "Access"))))
     }

@@ -16,7 +16,7 @@ import dto.contactperson.ContactPersonReadDto.*
 import kafka.ProducerService
 
 object ContactPersonEndpoints {
-  val routes: Routes[Principal & ContactPersonService & BusinessClientService & BusinessClientRepository & ProducerService, Nothing] = literal("contact-person") / Routes.fromIterable(
+  val routes: Routes[Principal & ContactPersonService & BusinessClientService & BusinessClientRepository & ProducerService, Nothing] = literal("api") / literal("contact-person") / Routes.fromIterable(
     Chunk(
       Method.GET / "" -> handler {
         (req: Request) => withContext((principal: Principal) =>  {

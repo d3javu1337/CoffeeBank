@@ -10,21 +10,19 @@ import web.request.invoice.InvoiceIssueRequest
 import zio.{Chunk, ZIO}
 import zio.http.{Method, Request, Response, Routes, handler, withContext}
 import zio.http.codec.PathCodec.literal
+import zio.json.EncoderOps
 
 object InvoiceEndpoints {
   val routes: Routes[Principal & PaymentAccountRepository & BusinessClientRepository &
     InvoiceServiceImpl & InvoiceServiceClient & PaymentAccountService, Nothing] = {
-    literal("invoice") / Routes.fromIterable(
+    literal("api") / literal("invoice") / Routes.fromIterable(
       Chunk(
-        Method.POST / "" -> handler {
-          (req: Request) =>
-            withContext((principal: Principal) => (for {
-              invoiceIssueRequest <- req.body.to[InvoiceIssueRequest]
-              isTokenValid <- ZIO.serviceWithZIO[PaymentAccountService](_.isTokenValid(principal.email, invoiceIssueRequest.token))
-              token <- ZIO.serviceWithZIO[InvoiceServiceImpl](_.invoiceIssue(principal.email, InvoiceIssueDto(invoiceIssueRequest.amount)))
-            } yield Response.text(token))
-              .catchAll(e => ZIO.fail(Response.badRequest))
-            )
+        Method.GET / "" -> handler {
+          (req: Request) => withContext((principal: Principal) => {
+            ZIO.serviceWithZIO[InvoiceServiceImpl](_.getAllInvoices(principal.email))
+              .map(invoices => Response.json(invoices.toJson))
+              .catchAll(e => ZIO.fail(Response.internalServerError))
+          })
         }
       )
     ) ++
@@ -51,5 +49,21 @@ object InvoiceEndpoints {
           }
         )
       )
+  }
+
+  val pubRoute: Routes[PaymentAccountRepository & BusinessClientRepository &
+    InvoiceServiceImpl & InvoiceServiceClient & PaymentAccountService, Nothing] = {
+    literal("api") / literal("invoice-issue") / Routes.fromIterable(
+      Chunk(
+        Method.POST / "" -> handler {
+          (req: Request) => (for {
+              invoiceIssueRequest <- req.body.to[InvoiceIssueRequest]
+              id <- ZIO.serviceWithZIO[PaymentAccountService](_.getAccountIdByInvoiceToken(invoiceIssueRequest.token))
+              token <- ZIO.serviceWithZIO[InvoiceServiceImpl](_.invoiceIssue(id, InvoiceIssueDto(invoiceIssueRequest.amount)))
+            } yield Response.text(token))
+              .catchAll(e => ZIO.fail(Response.internalServerError(e.getMessage)))
+        }
+      )
+    )
   }
 }

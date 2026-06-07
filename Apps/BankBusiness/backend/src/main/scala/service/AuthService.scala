@@ -1,6 +1,7 @@
 package service
 
-import dao.repository.BusinessClientRepository
+import dao.repository.{AuthRepository, BusinessClientRepository}
+import errors.NoEntityPresented
 import kafka.ProducerService
 import kafka.messages.businessclient.BusinessClientCreateRequest
 import security.JWT.{JWTService, TokenType, Tokens}
@@ -10,7 +11,7 @@ import web.request.auth.{BusinessClientRegistration, Login}
 import zio.{Cause, Duration, RIO, RLayer, Task, ZIO, ZLayer}
 
 final case class AuthService(private val jwtService: JWTService,
-                             private val businessClientService: BusinessClientService,
+                             private val authRepository: AuthRepository,
                              private val securityService: SecurityService
                             ) {
 
@@ -29,11 +30,11 @@ final case class AuthService(private val jwtService: JWTService,
     } yield offset.isDefined
   }
 
-  def login(loginRequest: Login): RIO[BusinessClientRepository, Tokens] = for {
-    client <- businessClientService.getByEmail(loginRequest.email)
-    isOk <- securityService.verifyPassword(loginRequest.password, client.passwordHash)
-    accessToken <- jwtService.generateAccessToken(client.email)
-    refreshToken <- jwtService.generateRefreshToken(client.email)
+  def login(loginRequest: Login): Task[Tokens] = for {
+    auth <- authRepository.findByEmail(loginRequest.email).someOrFail(NoEntityPresented())
+    isOk <- securityService.verifyPassword(loginRequest.password, auth.passwordHash)
+    accessToken <- jwtService.generateAccessToken(auth.email)
+    refreshToken <- jwtService.generateRefreshToken(auth.email)
   } yield Tokens(accessToken, refreshToken)
 
   def refresh(refreshToken: String): Task[Tokens] = for {
@@ -45,5 +46,6 @@ final case class AuthService(private val jwtService: JWTService,
 }
 
 object AuthService {
-  val layer: RLayer[JWTService & BusinessClientService & SecurityService, AuthService] = ZLayer.fromFunction(AuthService.apply(_, _, _))
+  
+  val layer: RLayer[JWTService & AuthRepository & SecurityService, AuthService] = ZLayer.fromFunction(AuthService.apply(_, _, _))
 }

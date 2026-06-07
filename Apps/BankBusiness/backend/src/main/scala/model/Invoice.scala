@@ -1,6 +1,7 @@
 package model
 
 import io.getquill.{InsertMeta, SchemaMeta, UpdateMeta, insertMeta, schemaMeta, updateMeta}
+import zio.json.{DeriveJsonCodec, DeriveJsonDecoder, DeriveJsonEncoder, JsonCodec, JsonDecoder, JsonEncoder}
 
 import java.util.UUID
 
@@ -21,4 +22,9 @@ object Invoice {
   inline given InsertMeta[Invoice] = insertMeta(_.id)
 
   inline given UpdateMeta[Invoice] = updateMeta(_.id)
+
+  implicit val encoder: JsonEncoder[Invoice] = DeriveJsonEncoder.gen[Invoice]
+  implicit val decoder: JsonDecoder[Invoice] = DeriveJsonDecoder.gen[Invoice]
+
+  given JsonCodec[Invoice] = DeriveJsonCodec.gen[Invoice]
 }

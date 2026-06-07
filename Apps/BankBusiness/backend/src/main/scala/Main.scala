@@ -1,5 +1,5 @@
 import configuration.{JWTConfig, KafkaConfig}
-import dao.repository.{BusinessClientRepository, BusinessClientRepositoryLive, ContactPersonRepositoryLive, PaymentAccountRepository, PaymentAccountRepositoryLive, PaymentRepositoryLive}
+import dao.repository.{AdminRepositoryLive, AuthRepositoryLive, BusinessClientRepository, BusinessClientRepositoryLive, ContactPersonRepositoryLive, InvoiceRepositoryLive, PaymentAccountRepository, PaymentAccountRepositoryLive, PaymentRepositoryLive}
 import dao.DatabaseContext
 import io.grpc.ManagedChannelBuilder
 import kafka.ProducerService
@@ -7,20 +7,22 @@ import org.d3javu.backend.grpc.invoice.ZioInvoice.InvoiceServiceClient
 import scalapb.zio_grpc.ZManagedChannel
 import security.JWT.JWTService
 import security.{PasswordEncoder, Principal, SecurityService}
-import service.{AuthService, BusinessClientService, ContactPersonService, InvoiceServiceImpl, PaymentAccountService, PaymentService}
+import service.{AdminService, AuthService, BusinessClientService, ContactPersonService, InvoiceServiceImpl, PaymentAccountService, PaymentService}
 import util.{Repository, Service}
 import web.routes.*
 import web.middleware.*
 import zio.*
-import zio.http.Server
+import zio.http.Middleware.cors
+import zio.http.{Server, int}
 import zio.http.netty.NettyConfig
+
 import javax.sql.DataSource
 
 object Main extends ZIOAppDefault {
 
   private val clientLayer = InvoiceServiceClient.live(
     ZManagedChannel(
-      ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext()
+      ManagedChannelBuilder.forAddress("core-backend", 9090).usePlaintext()
     )
   )
 
@@ -42,7 +44,10 @@ object Main extends ZIOAppDefault {
     BusinessClientRepositoryLive.layer ++
       ContactPersonRepositoryLive.layer ++
       PaymentRepositoryLive.layer ++
-      PaymentAccountRepositoryLive.layer
+      PaymentAccountRepositoryLive.layer ++
+      InvoiceRepositoryLive.layer ++
+      AdminRepositoryLive.layer ++
+      AuthRepositoryLive.layer
 
   private val businessClientServiceLayer: RLayer[BusinessClientRepository, BusinessClientService] = BusinessClientService.layer
 
@@ -54,21 +59,27 @@ object Main extends ZIOAppDefault {
       (businessClientServiceLayer >>> ContactPersonService.layer) ++
       paymentAccountServiceLayer ++
       (paymentAccountServiceLayer >>> InvoiceServiceImpl.layer) ++
-      (paymentAccountServiceLayer >>> PaymentService.layer)
+      (paymentAccountServiceLayer >>> PaymentService.layer) ++
+      AdminService.layer
 
   private val appLayers: ZLayer[Any & DataSource, Throwable, Service] =
     dataSource >>> jwtConfig >>> jwt >>> repositoryLayer >>> serviceLayer
 
-  private val authServiceLayer: ZLayer[BusinessClientRepository & BusinessClientService & JWTService & SecurityService, Throwable, AuthService] =
-    DatabaseContext.live >>> BusinessClientRepositoryLive.layer ++ BusinessClientService.layer ++ jwt ++ securityServiceLayer >>> AuthService.layer
+  private val authServiceLayer: ZLayer[JWTService & SecurityService, Throwable, AuthService] =
+    DatabaseContext.live >>> AuthRepositoryLive.layer ++ jwt ++ securityServiceLayer >>> AuthService.layer
 
-  private val routes =
+  private val routes = {
     AuthEndpoints.routes ++
       (BusinessClientEndpoints.routes ++
       ContactPersonEndpoints.routes ++
       InvoiceEndpoints.routes ++
       PaymentAccountEndpoints.routes ++
-      PaymentEndpoints.routes) @@ JWTAuthMiddlewareWithContext
+      PaymentEndpoints.routes) @@ JWTAuthMiddlewareWithContext ++
+      (AdminEndpoints.routes @@ AdminMiddleware @@ JWTAuthMiddlewareWithContext) ++
+      InvoiceEndpoints.pubRoute @@ cors(corsConfig)
+
+  }
+  private val emptyPrincipal: ULayer[Principal] = ZLayer.succeed(Principal(""))
 
   private def serveRoutes(port: Int) = ZIO.scoped {
     Server.serve(routes)
@@ -93,7 +104,9 @@ object Main extends ZIOAppDefault {
         InvoiceServiceImpl.layer,
         PaymentAccountRepositoryLive.layer,
         kafkaProducerServiceLayer,
-        clientLayer
+        clientLayer,
+        InvoiceRepositoryLive.layer,
+        AdminRepositoryLive.layer,
       )
   }
 

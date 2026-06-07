@@ -16,7 +16,7 @@ spring:
   kafka:
     main:
       consumer:
-        bootstrap-servers: "localhost:29092, localhost:39092, localhost:49092"
+        bootstrap-servers: "localhost:29092,localhost:39092,localhost:49092"
         group-id: "main-core-consumers"
     util:
       producer:
@@ -25,9 +25,6 @@ spring:
       consumer:
         bootstrap-servers: "localhost:59092"
         group-id: "util-core-consumers"
-#      properties:
-#        spring.json.trusted.packages: "org.d3javu.backend.kafka.requests.account"
-#      isolation-level: read_uncommitted
 logging:
   level:
     org.apache.kafka.clients.NetworkClient: error

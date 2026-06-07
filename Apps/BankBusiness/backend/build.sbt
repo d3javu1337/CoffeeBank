@@ -44,6 +44,19 @@ Compile / PB.targets := Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.grpc" % "grpc-netty" % "1.50.1",
+  "io.grpc" % "grpc-netty" % "1.81.0",
   "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
 )
+
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.first
+  case PathList("META-INF", "versions", "11", "module-info.class") => MergeStrategy.first
+  case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.first
+  case PathList("module-info.class") => MergeStrategy.discard
+  case x if x.endsWith(".class") => MergeStrategy.last
+  case x if x.endsWith(".tasty") => MergeStrategy.last
+  case x if x.endsWith(".properties") => MergeStrategy.first
+  case x => MergeStrategy.defaultMergeStrategy(x)
+}
+
+assembly / assemblyJarName := "app.jar"

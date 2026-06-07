@@ -13,7 +13,7 @@ import zio.http.Status.Accepted
 import zio.json.*
 
 object PaymentAccountEndpoints {
-  val routes: Routes[Principal & BusinessClientRepository & PaymentAccountService & ProducerService, Nothing] = literal("account") / Routes.fromIterable(
+  val routes: Routes[Principal & BusinessClientRepository & PaymentAccountService & ProducerService, Nothing] = literal("api") / literal("account") / Routes.fromIterable(
     Chunk(
       Method.GET / "" -> handler {
         (req: Request) => withContext((principal: Principal) => (for {

@@ -6,6 +6,8 @@ import org.d3javu.backend.repository.business.BusinessClientRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class BusinessClientService {
@@ -20,5 +22,9 @@ public class BusinessClientService {
                 request.email(),
                 request.passwordHash()
         );
+    }
+
+    public Optional<Long> getIdByEmail(String email) {
+        return this.businessClientRepository.findIdByEmail(email);
     }
 }

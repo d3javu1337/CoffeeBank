@@ -9,7 +9,7 @@ import javax.sql.DataSource
 
 trait PaymentAccountRepository {
   def findByClientId(clientId: Long): Task[Option[PaymentAccountReadDto]]
-  def isTokenValid(paymentAccountId: Long, token: UUID): Task[Boolean]
+  def findIdByToken(token: UUID): Task[Option[Long]]
   def findInvoiceCreateTokenByClientId(paymentAccountId: Long): Task[Option[UUID]]
   def findIdByClientEmail(businessClientEmail: String): Task[Option[Long]]
 }
@@ -34,9 +34,15 @@ case class PaymentAccountRepositoryLive(private val ds: DataSource) extends Paym
       .provideLayer(dsLayer)
   }
 
-  override def isTokenValid(paymentAccountId: Long, token: UUID): Task[Boolean] = {
-    run(quote(paymentAccounts.filter(acc => acc.id == lift(paymentAccountId) && acc.invoiceCreateToken == lift(token)).size))
-      .mapBoth(e => Throwable(e.getMessage), c => c==1)
+  override def findIdByToken(token: UUID): Task[Option[Long]] = {
+    run(
+      quote(
+        paymentAccounts
+          .filter(acc => acc.invoiceCreateToken == lift(token))
+          .map(acc => acc.id)
+      )
+    )
+      .mapBoth(e => Throwable(e.getMessage), _.headOption)
       .provideLayer(dsLayer)
   }
 

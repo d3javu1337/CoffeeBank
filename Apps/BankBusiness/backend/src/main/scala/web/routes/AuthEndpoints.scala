@@ -5,9 +5,9 @@ import errors.AuthError
 import io.jsonwebtoken.JwtException
 import kafka.ProducerService
 import org.apache.kafka.common.KafkaException
-import service.{AuthService, BusinessClientService}
+import service.AuthService
 import web.request.auth.{BusinessClientRegistration, Login}
-import zio.{Chunk, Scope, ZIO}
+import zio.{Chunk, ZIO}
 import zio.http.Status.Accepted
 import zio.http.{Cookie, Method, Path, Request, Response, Routes, handler}
 import zio.http.codec.PathCodec.literal
@@ -16,7 +16,7 @@ import zio.schema.codec.DecodeError
 import zio.schema.codec.DecodeError.ReadError
 
 object AuthEndpoints {
-  val routes: Routes[AuthService & BusinessClientRepository & ProducerService, Nothing] = literal("auth") / Routes.fromIterable(
+  val routes: Routes[AuthService & BusinessClientRepository & ProducerService, Nothing] = literal("api") / literal("auth") / Routes.fromIterable(
     Chunk(
       Method.POST / "registration" -> handler {
         (req: Request) => {
