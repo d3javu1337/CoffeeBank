@@ -3,12 +3,12 @@ package repository.base.client
 
 import org.d3javu.domain.base.Client
 import org.d3javu.domain.base.Client.{Email, PhoneNumber}
-import org.d3javu.infra.kafka.main.dto.ClientRequests.RegistrationDto
+import org.d3javu.infra.kafka.main.dto.base.ClientRequests.Registration
 
 import java.time.LocalDate
 
 trait ClientRepository[F[_]] {
-  def registration(registrationDto: RegistrationDto): F[Unit]
+  def registration(registrationDto: Registration): F[Unit]
   def confirmEmail(email: Email): F[Unit]
   def findClientByPhoneNumber(phoneNumber: PhoneNumber): F[Option[Client.Id]]
 }

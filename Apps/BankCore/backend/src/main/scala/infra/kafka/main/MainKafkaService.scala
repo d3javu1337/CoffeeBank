@@ -2,53 +2,44 @@ package org.d3javu
 package infra.kafka.main
 
 import scala.concurrent.duration.DurationInt
-import org.d3javu.infra.kafka.main.dto.AccountRequests
+import org.d3javu.infra.kafka.main.dto.base.ClientRequests.Registration
 import org.typelevel.log4cats.Logger
-import infra.config.types.MainKafkaConfig
 
-import cats.effect.Async
-import fs2.Stream
-import fs2.kafka.{Deserializer, ValueDeserializer, _}
+import infra.config.types.MainKafkaConfig
 import cats.effect._
+import fs2.Stream._
+import fs2.kafka._
+import fs2.{Stream, kafka}
 import cats.effect.implicits.effectResourceOps
 import cats.syntax.all._
-import fs2._
-import fs2.Stream._
 import fs2.kafka.consumer.KafkaConsumeChunk.CommitNow
-import fs2.kafka
-import org.d3javu.infra.kafka.main.dto.ClientRequests.RegistrationDto
+import io.circe.Decoder
+import io.circe.parser.decode
+import org.d3javu.infra.kafka.main.dto.base.AccountRequests
 
 class MainKafkaService[F[_]: Async: Logger](config: MainKafkaConfig) {
 
-//  private val settings = KafkaConsumer.
+  private val consumerSettings = ConsumerSettings[F, String, String]
+    .withGroupId(config.consumer.groupId)
+    .withBootstrapServers(config.consumer.bootstrapServers)
+    .withAutoOffsetReset(AutoOffsetReset.Latest)
+    .withEnableAutoCommit(true)
 
-  def consumer[T](topic: String) = {
-    KafkaConsumer
-      .stream[F, String, RegistrationDto](ConsumerSettings
-        .apply[F, String, RegistrationDto]
-        .withGroupId(config.consumer.groupId)
-        .withBootstrapServers(config.consumer.bootstrapServers)
-        .withEnableAutoCommit(true)
-      )
-      .subscribeTo(topic)
-      .partitionedRecords
-      .map(ps => ps.evalMap(t => Logger[F].info(t.record.value.toString)))
-      .parJoinUnbounded
-      .compile
-      .drain
-//    val instance = ConsumerApi.resource[F, String, T](
-//      BootstrapServers(config.consumer.bootstrapServers),
-//      GroupId(config.consumer.groupId),
-//      EnableAutoCommit(true),
-//    )
-//    instance.map(_.subscribe(topic))
-//    instance
-
-
+  def startConsume[T: Decoder](topic: String, func: T => F[_]): F[Unit] = {
+    KafkaConsumer.stream[F, String, String](consumerSettings).subscribeTo(topic)
+      .records.evalMap(commitable =>
+      Logger[F].info(commitable.record.value) >>
+        decode[T](commitable.record.value).liftTo[F]
+          .map(dto => (commitable.offset, Option(dto)))
+          .handleErrorWith(_ => (commitable.offset, Option.empty[T]).pure[F]),
+      ).collect { case (offset, Some(dto)) => (offset, dto) }.evalMap {
+        case (offset, dto) => func(dto) >> offset.commit
+      }.compile.drain
   }
+}
 
-//  def t[T: Deserializer](topic: String, serializeTo: T) = {
-//    consumer[T].map(_.subscribe(topic))
-//  }
-
+object MainKafkaService {
+  def make[F[_]: Async: Logger](config: MainKafkaConfig): Resource[F, MainKafkaService[F]] = {
+    Resource.eval(Async[F].delay(new MainKafkaService[F](config)))
+  }
 }

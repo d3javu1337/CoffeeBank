@@ -20,7 +20,6 @@ import scala.concurrent.duration.DurationInt
 object Main extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] = {
-//  override def run: IO[Unit] = {
 
     implicit def logger: Logger[IO] = new CoreLogger[IO].loggerForName("core")
 
@@ -28,12 +27,7 @@ object Main extends IOApp {
     (for {
       _ <- Logger[IO].info("init app").toResource
       implicit0(trace: Trace[IO]) <- Trace.ioTrace(Span.noop).toResource
-      app <- App.build[IO].use(c => c.pure[IO]).toResource
-    } yield app).useForever
-//      .use(_.use(app => {
-//        app.services.base.clientService.getClientIdByPhoneNumber(PhoneNumber("80923840832"))
-//          .map(_.asLong.toString)
-//          .flatMap(v => Logger[IO].info(v))
-//      })) *> IO(ExitCode.Success)
+      _ <- App.build[IO]
+    } yield ()).useForever.as(ExitCode.Success)
   }
 }

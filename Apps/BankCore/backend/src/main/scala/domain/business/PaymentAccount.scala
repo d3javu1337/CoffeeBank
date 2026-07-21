@@ -4,6 +4,8 @@ package domain.business
 import io.estatico.newtype.macros.newtype
 import PaymentAccount._
 
+import java.util.UUID
+
 case class PaymentAccount(
                          id: Id,
                          name: Name,
@@ -21,5 +23,8 @@ object PaymentAccount {
 
   @newtype
   final case class Deposit(asDouble: Double)
+
+  @newtype
+  final case class InvoiceIssueToken(asUuid: UUID)
 
 }

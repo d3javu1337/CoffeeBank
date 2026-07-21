@@ -1,7 +1,9 @@
 package org.d3javu
 package service.transaction
 
-trait TransactionService[F[_]] {
-  def transferByPhoneNumber: F[Unit]
-  def invoicePayment: F[Unit]
+import backend.grpc.Transactions.TransactionServiceFs2Grpc
+
+import io.grpc.Metadata
+
+trait TransactionService[F[_]] extends TransactionServiceFs2Grpc[F, Metadata] {
 }

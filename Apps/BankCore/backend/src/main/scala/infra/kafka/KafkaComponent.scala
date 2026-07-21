@@ -20,8 +20,8 @@ class KafkaComponent[F[_]](
 object KafkaComponent {
   def make[F[_]: Async: Logger](config: KafkaConfig): Resource[F, KafkaComponent[F]] = for {
     _ <- Logger[F].info("start init kafka").toResource
-    mainKafka = (new MainKafkaService[F](config.main))
-    utilKafka = (new UtilKafkaService[F](config.util))
+    mainKafka <- (MainKafkaService.make[F](config.main))
+    utilKafka <- UtilKafkaService.make[F](config.util)
     comp = new KafkaComponent[F](
       mainKafka,
       utilKafka

@@ -4,10 +4,10 @@ package service.base.client
 import domain.base.Client
 
 import org.d3javu.domain.base.Client.{Email, PhoneNumber}
-import org.d3javu.infra.kafka.main.dto.ClientRequests.RegistrationDto
+import org.d3javu.infra.kafka.main.dto.base.ClientRequests.Registration
 
 trait ClientService[F[_]] {
-  def registration(dto: RegistrationDto): F[Unit]
+  def registration(dto: Registration): F[Unit]
   def getClientIdByPhoneNumber(phoneNumber: PhoneNumber): F[Client.Id]
   def confirmEmail(email: Email): F[Unit]
 }

@@ -24,7 +24,6 @@ object DatabaseComponent {
     database = config.database,
     password = Some(config.password),
     max = 10,
-    readTimeout = 1.seconds,
   )
 
 }

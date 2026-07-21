@@ -3,11 +3,11 @@ package infra
 
 import infra.grpc.GRPCComponent
 
+import cats.Parallel
 import cats.effect.implicits.effectResourceOps
 import org.d3javu.infra.kafka.KafkaComponent
 import org.d3javu.service.ServiceComponent
 import org.d3javu.service.base.BaseServiceComponent
-//import cats.effect.kernel.syntax.EffectResourceOps
 import cats.{Applicative, Monad}
 import cats.effect.kernel.{Async, Resource}
 import cats.syntax.all._
@@ -24,14 +24,15 @@ class Infrastructure[F[_] : Async](
                                     val kafkaComponent: KafkaComponent[F]
                                              )
 
-private class AppInfrastructure[F[_] : Applicative : Monad : Logger : Async](config: AppConfig) {
+private class AppInfrastructure[F[_] : Applicative : Monad : Logger : Async: Parallel](config: AppConfig) {
 
   def build: Resource[F, Infrastructure[F]] = {
     for {
       _ <- Logger[F].info("init core infra").toResource
       kafka <- KafkaComponent.make[F](config.kafka)
+      grpc = new GRPCComponent[F](config.grpc)
       res = new Infrastructure[F](
-        new GRPCComponent[F](config.grpc),
+        grpc,
         kafka
       )
       _ <- Logger[F].info("finish core infra init").toResource
@@ -42,7 +43,7 @@ private class AppInfrastructure[F[_] : Applicative : Monad : Logger : Async](con
 
 object AppInfrastructure {
 
-  def make[F[_] : Async : Logger](
+  def make[F[_] : Async : Logger: Parallel](
                                    config: AppConfig
                                  ): Resource[F, Infrastructure[F]] = {
     new AppInfrastructure[F](config).build

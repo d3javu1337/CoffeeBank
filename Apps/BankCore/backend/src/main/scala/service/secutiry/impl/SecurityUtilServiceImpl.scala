@@ -3,6 +3,7 @@ package service.secutiry.impl
 
 import cats.MonadThrow
 import cats.implicits._
+import org.d3javu.domain.base.Card.{CardNumber, SecurityCode}
 import org.d3javu.domain.base.{Card, CardType}
 import org.d3javu.service.secutiry.SecurityUtilService
 import org.typelevel.log4cats.Logger
@@ -21,11 +22,11 @@ class SecurityUtilServiceImpl extends SecurityUtilService {
           case CardType.PREPAID => "4"
         }
 
-  override def generateCardNumber(id: Card.CardId, cardType: CardType): String = {
+  override def generateCardNumber(id: Card.CardId, cardType: CardType): CardNumber = {
     t(cardType).some
       .map(v => s"$cardNumberBase$v${String.format("%8s",id).replace(' ', '0')}")
       .map(v => s"$v${luhnSignature(v)}") match {
-        case Some(v) => v
+        case Some(v) => CardNumber(v)
       }
   }
 
@@ -42,13 +43,13 @@ class SecurityUtilServiceImpl extends SecurityUtilService {
     ('0' + ((10 - res%10)%10)).toChar
   }
 
-  override def generateSecurityCode: String = {
+  override def generateSecurityCode: SecurityCode = {
     val t = String.valueOf(new Random(Instant.now().toEpochMilli).nextLong(0, 1000))
-    t.length match {
+    SecurityCode(t.length match {
       case 1 => s"00$t"
       case 2 => s"0$t"
       case 3 => t
-    }
+    })
   }
 }
 
